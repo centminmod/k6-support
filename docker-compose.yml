@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     command: --config.file=/etc/prometheus/prometheus.yml --log.level=debug
     ports:
-      - 9090:9090
+      - 9199:9090
     volumes:
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -37,7 +37,7 @@ services:
       - ./config/influxdb.conf:/etc/influxdb/influxdb.conf
       - influxdb_data:/var/lib/influxdb
     ports:
-      - 8086:8086
+      - 8186:8086
     networks:
       - k6-support
 
@@ -46,7 +46,7 @@ services:
     container_name: k6-support-grafana
     restart: unless-stopped
     ports:
-      - 9000:3000
+      - 9409:3000
     volumes:
       - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
