@@ -25,6 +25,12 @@ nano /etc/docker/daemon.json
   "dns": ["8.8.8.8", "8.8.4.4"]
 }
 ```
+# optional for Centmin Mod CSF Firewall
+
+```
+csf -a $(docker network inspect k6-support_k6-support | jq -r '.[] | .IPAM.Config[] | .Subnet') k6network
+```
+
 ```
 service docker restart
 ```
@@ -69,6 +75,7 @@ To uninstall:
 ```
 docker stop k6-support-node-exporter k6-support-grafana k6-support-influxdb k6-support-prometheus
 docker-compose rm
+docker volumes rm k6-support_influxdb_data k6-support_prometheus_data
 ```
 ```
 docker-compose rm

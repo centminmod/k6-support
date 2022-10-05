@@ -235,9 +235,9 @@
           ],
           "tags": [
             {
-              "key": "error_code",
+              "key": "expected_response",
               "operator": "=",
-              "value": "1404"
+              "value": "true"
             }
           ]
         }
