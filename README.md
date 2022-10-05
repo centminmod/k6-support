@@ -1,10 +1,33 @@
 # k6-support
 
-A full-fledged local k6 ecosystem a `docker-compose up` away.
+A full-fledged local k6 ecosystem a `docker-compose up` away. Custom branch for use with my [k6-benchmarking](https://github.com/centminmod/k6-benchmarking) scripts.
 
 Spin up a prometheus+influxDB+grafana stack locally. Note that the docker-compose stack will automatically provision Grafana data sources and dashboards for you.
 
 ## Getting started
+
+Install docker on CentOS 7/8/9 https://docs.docker.com/engine/install/centos/ and post-install steps [here](https://docs.docker.com/engine/install/linux-postinstall/). To uninstall [read](https://docs.docker.com/engine/install/centos/#uninstall-docker-engine).
+
+```
+yum -y install yum-utils
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+systemctl start docker
+systemctl enable docker
+systemctl enable containerd
+systemctl status docker
+```
+```
+nano /etc/docker/daemon.json
+```
+```
+{
+  "dns": ["8.8.8.8", "8.8.4.4"]
+}
+```
+```
+service docker restart
+```
 
 Install docker-compose if not installed https://docs.docker.com/compose/install/
 
