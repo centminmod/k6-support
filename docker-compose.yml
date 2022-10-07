@@ -9,6 +9,20 @@ volumes:
   influxdb_data: {}
 
 services:
+  telegraf:
+    image: telegraf:1.22
+    container_name: k6-support-telegraf
+    volumes:
+    - ./config/telegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    ports:
+    - '127.0.0.1:8125:8125/udp'
+    networks:
+      - k6-support
+
   prometheus:
     image: prom/prometheus:latest
     container_name: k6-support-prometheus
