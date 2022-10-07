@@ -76,7 +76,7 @@ To uninstall:
 
 ```
 docker stop k6-support-node-exporter k6-support-grafana k6-support-influxdb k6-support-prometheus k6-support-telegraf
-docker-compose rm
+docker-compose rm -f
 docker volume rm k6-support_influxdb_data k6-support_prometheus_data
 ```
 ```
