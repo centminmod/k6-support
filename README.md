@@ -46,10 +46,11 @@ docker-compose --version
 Docker Compose version v2.11.2
 ```
 
-Run docker-compose command:
+Run docker-compose command and also restart the service for Telegraf to work with InfluxDB:
 
 ```
 docker-compose up --build -d
+docker-compose restart
 ```
 
 ```
@@ -72,6 +73,30 @@ da48393caa34   prom/node-exporter:latest    "/bin/node_exporter …"   39 second
 c42636858581   influxdb:1.8                 "/entrypoint.sh infl…"   39 seconds ago   Up 37 seconds   0.0.0.0:8186->8086/tcp, :::8186->8086/tcp      k6-support-influxdb
 ```
 
+or
+
+```
+docker-compose ps
+NAME                       COMMAND                  SERVICE             STATUS              PORTS
+k6-support-grafana         "/run.sh"                grafana             running             0.0.0.0:9409->3000/tcp, :::9409->3000/tcp
+k6-support-influxdb        "/entrypoint.sh infl…"   influxdb            running             0.0.0.0:8186->8086/tcp, :::8186->8086/tcp
+k6-support-node-exporter   "/bin/node_exporter …"   node-exporter       running             0.0.0.0:9100->9100/tcp, :::9100->9100/tcp
+k6-support-prometheus      "/bin/prometheus --c…"   prometheus          running             0.0.0.0:9199->9090/tcp, :::9199->9090/tcp
+k6-support-telegraf        "/entrypoint.sh tele…"   telegraf            running             8092/udp, 8094/tcp, 127.0.0.1:8125->8125/udp
+```
+
+To restart containers
+
+```
+docker-compose restart
+[+] Running 5/5
+ ⠿ Container k6-support-influxdb       Started                                                                                                                                                          0.7s
+ ⠿ Container k6-support-node-exporter  Started                                                                                                                                                          0.8s
+ ⠿ Container k6-support-prometheus     Started                                                                                                                                                          0.8s
+ ⠿ Container k6-support-grafana        Started                                                                                                                                                          0.8s
+ ⠿ Container k6-support-telegraf       Started                                                                                                                                                          0.4s
+```
+
 To uninstall:
 
 ```
@@ -79,6 +104,13 @@ docker stop k6-support-node-exporter k6-support-grafana k6-support-influxdb k6-s
 docker-compose rm -f
 docker volume rm k6-support_influxdb_data k6-support_prometheus_data
 ```
+
+or setup an alias command
+
+```
+alias rmk6='docker stop k6-support-node-exporter k6-support-grafana k6-support-influxdb k6-support-prometheus k6-support-telegraf && docker-compose rm -f && docker volume rm k6-support_influxdb_data k6-support_prometheus_data'
+```
+
 ```
 docker-compose rm
 ? Going to remove k6-support-telegraf, k6-support-grafana, k6-support-prometheus, k6-support-influxdb, k6-support-node-exporter Yes
