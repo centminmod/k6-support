@@ -54,26 +54,28 @@ docker-compose up --build -d
 
 ```
 docker images
-REPOSITORY                                 TAG          IMAGE ID       CREATED       SIZE
-prom/node-exporter                         latest       d3e443c987ef   8 days ago    22.3MB
-grafana/grafana-oss                        latest       99169ddb2b0b   2 weeks ago   300MB
-influxdb                                   1.8          8dd1ac1f245f   3 weeks ago   308MB
-prom/prometheus                            latest       df28013bb363   3 weeks ago   214MB
+REPOSITORY                                 TAG          IMAGE ID       CREATED        SIZE
+telegraf                                   1.22         702613c5fe38   33 hours ago   354MB
+prom/node-exporter                         latest       d3e443c987ef   10 days ago    22.3MB
+grafana/grafana-oss                        latest       99169ddb2b0b   2 weeks ago    300MB
+influxdb                                   1.8          8dd1ac1f245f   3 weeks ago    308MB
+prom/prometheus                            latest       df28013bb363   3 weeks ago    214MB
 ```
 
 ```
 docker ps
-CONTAINER ID   IMAGE                        COMMAND                  CREATED          STATUS          PORTS                                       NAMES
-c5b80e092d99   influxdb:1.8                 "/entrypoint.sh infl…"   13 minutes ago   Up 13 minutes   0.0.0.0:8186->8086/tcp, :::8186->8086/tcp   k6-support-influxdb
-d6c7d914690f   prom/prometheus:latest       "/bin/prometheus --c…"   13 minutes ago   Up 13 minutes   0.0.0.0:9199->9090/tcp, :::9199->9090/tcp   k6-support-prometheus
-76bc75de3179   prom/node-exporter:latest    "/bin/node_exporter …"   13 minutes ago   Up 13 minutes   0.0.0.0:9100->9100/tcp, :::9100->9100/tcp   k6-support-node-exporter
-1c9fbac92088   grafana/grafana-oss:latest   "/run.sh"                13 minutes ago   Up 13 minutes   0.0.0.0:9409->3000/tcp, :::9409->3000/tcp   k6-support-grafana
+CONTAINER ID   IMAGE                        COMMAND                  CREATED          STATUS          PORTS                                          NAMES
+1c58dea96c0c   telegraf:1.22                "/entrypoint.sh tele…"   39 seconds ago   Up 37 seconds   8092/udp, 8094/tcp, 127.0.0.1:8125->8125/udp   k6-support-telegraf
+df00bd35f0c3   prom/prometheus:latest       "/bin/prometheus --c…"   39 seconds ago   Up 37 seconds   0.0.0.0:9199->9090/tcp, :::9199->9090/tcp      k6-support-prometheus
+ccb2ee7c2996   grafana/grafana-oss:latest   "/run.sh"                39 seconds ago   Up 37 seconds   0.0.0.0:9409->3000/tcp, :::9409->3000/tcp      k6-support-grafana
+da48393caa34   prom/node-exporter:latest    "/bin/node_exporter …"   39 seconds ago   Up 37 seconds   0.0.0.0:9100->9100/tcp, :::9100->9100/tcp      k6-support-node-exporter
+c42636858581   influxdb:1.8                 "/entrypoint.sh infl…"   39 seconds ago   Up 37 seconds   0.0.0.0:8186->8086/tcp, :::8186->8086/tcp      k6-support-influxdb
 ```
 
 To uninstall:
 
 ```
-docker stop k6-support-node-exporter k6-support-grafana k6-support-influxdb k6-support-prometheus
+docker stop k6-support-node-exporter k6-support-grafana k6-support-influxdb k6-support-prometheus k6-support-telegraf
 docker-compose rm
 docker volumes rm k6-support_influxdb_data k6-support_prometheus_data
 ```
