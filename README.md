@@ -90,6 +90,48 @@ docker-compose rm
  ⠿ Container k6-support-telegraf       Removed     
 ```
 
+```
+docker exec -it k6-support-influxdb influx -execute "show databases"
+name: databases
+name
+----
+k6
+influx
+_internal
+```
+
+```
+curl -sG http://localhost:8186/query --data-urlencode "q=SHOW DATABASES" | jq -r
+{
+  "results": [
+    {
+      "statement_id": 0,
+      "series": [
+        {
+          "name": "databases",
+          "columns": [
+            "name"
+          ],
+          "values": [
+            [
+              "k6"
+            ],
+            [
+              "influx"
+            ],
+            [
+              "_internal"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+docker exec -it k6-support-influxdb influx -execute "create user admin2 with password 'passwprd' with all privileges"
+
 From there, you will find:
 
 - Prometheus at [localhost:9199](http://localhost:9199)

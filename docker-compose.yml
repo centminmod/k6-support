@@ -36,10 +36,12 @@ services:
     volumes:
       - ./config/influxdb.conf:/etc/influxdb/influxdb.conf
       - influxdb_data:/var/lib/influxdb
+      - ./config/influxdb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - 8186:8086
     networks:
       - k6-support
+
 
   telegraf:
     image: telegraf:1.22
