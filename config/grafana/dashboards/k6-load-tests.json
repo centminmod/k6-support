@@ -26,7 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 2587,
   "graphTooltip": 2,
-  "id": 3,
+  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -2243,8 +2243,8 @@
     ]
   },
   "time": {
-    "from": "2022-10-06T06:13:00.343Z",
-    "to": "2022-10-06T06:15:09.494Z"
+    "from": "now-5m",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -2274,6 +2274,6 @@
   "timezone": "browser",
   "title": "My K6 Influxdb",
   "uid": "jVx9ks44z",
-  "version": 7,
+  "version": 1,
   "weekStart": ""
 }
