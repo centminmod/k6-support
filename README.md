@@ -123,7 +123,7 @@ docker-compose rm
 ```
 
 ```
-docker exec -it k6-support-influxdb influx -execute "show databases"
+docker exec -it k6-support-influxdb influx -username admin -password password -execute "show databases"
 name: databases
 name
 ----
@@ -133,7 +133,7 @@ _internal
 ```
 
 ```
-curl -sG http://localhost:8186/query --data-urlencode "q=SHOW DATABASES" | jq -r
+curl -u admin:password -sG http://localhost:8186/query --data-urlencode "q=SHOW DATABASES" | jq -r
 {
   "results": [
     {
