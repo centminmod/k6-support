@@ -81,12 +81,13 @@ docker volume rm k6-support_influxdb_data k6-support_prometheus_data
 ```
 ```
 docker-compose rm
-? Going to remove k6-support-influxdb, k6-support-prometheus, k6-support-node-exporter, k6-support-grafana Yes
-[+] Running 4/0
- ⠿ Container k6-support-influxdb       Removed                                                                                                                                                          0.0s
+? Going to remove k6-support-telegraf, k6-support-grafana, k6-support-prometheus, k6-support-influxdb, k6-support-node-exporter Yes
+[+] Running 5/0
+ ⠿ Container k6-support-node-exporter  Removed                                                                                                                                                          0.0s
  ⠿ Container k6-support-grafana        Removed                                                                                                                                                          0.0s
  ⠿ Container k6-support-prometheus     Removed                                                                                                                                                          0.0s
- ⠿ Container k6-support-node-exporter  Removed        
+ ⠿ Container k6-support-influxdb       Removed                                                                                                                                                          0.0s
+ ⠿ Container k6-support-telegraf       Removed     
 ```
 
 From there, you will find:
