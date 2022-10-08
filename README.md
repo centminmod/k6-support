@@ -251,6 +251,143 @@ curl -u admin:password -sG "http://localhost:8186/query?db=telegraf&epoch=ms&q=S
 }
 ```
 
+```
+docker exec -it k6-support-influxdb influx -username admin -password password -execute 'show tag keys on k6 from "http_req_duration"'
+name: http_req_duration
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+```
+
+```
+docker exec -it k6-support-influxdb influx -username admin -password password -execute 'show tag keys on k6'
+name: checks
+tagKey
+------
+check
+scenario
+stage
+
+name: data_received
+tagKey
+------
+scenario
+stage
+
+name: data_sent
+tagKey
+------
+scenario
+stage
+
+name: http_req_blocked
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_connecting
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_duration
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_failed
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_receiving
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_sending
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_tls_handshaking
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_req_waiting
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: http_reqs
+tagKey
+------
+expected_response
+name
+scenario
+stage
+status
+
+name: iteration_duration
+tagKey
+------
+scenario
+stage
+
+name: iterations
+tagKey
+------
+scenario
+stage
+```
+
+```
+docker exec -it k6-support-influxdb influx -username admin -password password -execute 'show series on k6 from "http_req_duration" limit 10'
+key
+---
+http_req_duration,expected_response=true,name=https://domain1.com,scenario=ramping_vus,stage=0,status=200
+http_req_duration,expected_response=true,name=https://domain1.com,scenario=ramping_vus,stage=1,status=200
+http_req_duration,expected_response=true,name=https://domain1.com,scenario=ramping_vus,stage=2,status=200
+http_req_duration,expected_response=true,name=https://domain1.com,scenario=ramping_vus,stage=3,status=200
+```
+
 From there, you will find:
 
 - Prometheus at [localhost:9199](http://localhost:9199)
