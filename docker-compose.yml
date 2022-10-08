@@ -51,6 +51,8 @@ services:
       - HOST_PROC=/host/proc
       - HOST_SYS=/host/sys
       - HOST_ETC=/host/etc
+      - HOST_VAR=/hostfs/var
+      - HOST_RUN=/hostfs/run
       - HOST_MOUNT_PREFIX=/hostfs
     privileged: true
     volumes:
