@@ -49,6 +49,9 @@ Docker Compose version v2.11.2
 Run docker-compose command and also restart the service for Telegraf to work with InfluxDB:
 
 ```
+# docker groupid
+dgid=$(stat -c '%g' /var/run/docker.sock)
+sed -i "s|telegraf:991|telegraf:$dgid|" docker-compose.yml
 docker-compose up --build -d
 docker-compose restart
 ```

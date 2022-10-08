@@ -46,6 +46,9 @@ services:
   telegraf:
     image: telegraf:1.22
     container_name: k6-support-telegraf
+    # https://www.influxdata.com/blog/docker-run-telegraf-as-non-root/
+    # stat -c '%g' /var/run/docker.sock
+    user: telegraf:991
     restart: unless-stopped
     environment:
       - HOST_PROC=/host/proc

@@ -68,3 +68,46 @@ datasources:
      editable: true
 
      version: 1
+
+  # <string, required> name of the datasource. Required
+   - name: influxDB-telegraf
+
+     # <string, required> datasource type. Required 
+     type: influxdb
+
+     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
+     access: proxy
+     
+     # <int> org id. will default to orgId 1 if not specified
+     orgId: 1
+
+     # <string> url
+     url: http://influxdb:8086
+
+     # <string> database
+     database: telegraf
+
+     # <string> user
+     user: telegraf
+
+     # <bool> enable/disable basic auth
+     basicAuth: true
+    
+     # <string> basic auth username
+     basicAuthUser: admin
+     
+     # <string> Deprecated, use secureJsonData.basicAuthPassword
+     basicAuthPassword: password
+     
+     jsonData:
+      httpMode: GET
+     secureJsonData:
+      password: password
+
+     # <bool> mark as default datasource. Max one per org
+     isDefault: false
+     
+     # <bool> allow users to edit datasources from the UI.
+     editable: true
+
+     version: 1
