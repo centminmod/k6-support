@@ -122,13 +122,19 @@ docker-compose rm
  ⠿ Container k6-support-telegraf       Removed     
 ```
 
+aliases to rebuild everything
+
+```
+alias rebuildk6='rmk6 && git stash && git pull && docker-compose up --build -d'
+```
+
 ```
 docker exec -it k6-support-influxdb influx -username admin -password password -execute "show databases"
 name: databases
 name
 ----
 k6
-influx
+telegraf
 _internal
 ```
 
@@ -149,7 +155,7 @@ curl -u admin:password -sG http://localhost:8186/query --data-urlencode "q=SHOW 
               "k6"
             ],
             [
-              "influx"
+              "telegraf"
             ],
             [
               "_internal"
@@ -162,7 +168,85 @@ curl -u admin:password -sG http://localhost:8186/query --data-urlencode "q=SHOW 
 }
 ```
 
-docker exec -it k6-support-influxdb influx -execute "create user admin2 with password 'passwprd' with all privileges"
+```
+docker exec -it k6-support-influxdb influx -username admin -password password -execute "show measurements on telegraf"
+name: measurements
+name
+----
+cpu
+disk
+diskio
+interrupts
+kernel
+linux_sysctl_fs
+mem
+net
+netstat
+processes
+soft_interrupts
+swap
+system
+```
+
+```
+curl -u admin:password -sG "http://localhost:8186/query?db=telegraf&epoch=ms&q=SHOW+measurements" | jq -r
+{
+  "results": [
+    {
+      "statement_id": 0,
+      "series": [
+        {
+          "name": "measurements",
+          "columns": [
+            "name"
+          ],
+          "values": [
+            [
+              "cpu"
+            ],
+            [
+              "disk"
+            ],
+            [
+              "diskio"
+            ],
+            [
+              "interrupts"
+            ],
+            [
+              "kernel"
+            ],
+            [
+              "linux_sysctl_fs"
+            ],
+            [
+              "mem"
+            ],
+            [
+              "net"
+            ],
+            [
+              "netstat"
+            ],
+            [
+              "processes"
+            ],
+            [
+              "soft_interrupts"
+            ],
+            [
+              "swap"
+            ],
+            [
+              "system"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 From there, you will find:
 
