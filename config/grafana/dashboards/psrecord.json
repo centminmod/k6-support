@@ -58,7 +58,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "always",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -188,7 +188,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "always",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -305,7 +305,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "bars",
-            "fillOpacity": 25,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -314,7 +314,7 @@
             },
             "lineInterpolation": "smooth",
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 2,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -364,16 +364,22 @@
                 "value": "Real Memory Used (MB)"
               },
               {
+                "id": "custom.showPoints",
+                "value": "auto"
+              },
+              {
                 "id": "custom.drawStyle",
                 "value": "line"
               },
               {
-                "id": "custom.fillOpacity",
-                "value": 0
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
               },
               {
-                "id": "custom.showPoints",
-                "value": "never"
+                "id": "custom.pointSize",
+                "value": 2
               }
             ]
           }
@@ -508,13 +514,13 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "psrecord",
   "uid": "cQSsI644z",
-  "version": 5,
+  "version": 7,
   "weekStart": ""
 }
