@@ -394,7 +394,11 @@
       "id": 3,
       "options": {
         "legend": {
-          "calcs": [],
+          "calcs": [
+            "min",
+            "mean",
+            "max"
+          ],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -521,6 +525,6 @@
   "timezone": "",
   "title": "psrecord",
   "uid": "cQSsI644z",
-  "version": 7,
+  "version": 8,
   "weekStart": ""
 }
