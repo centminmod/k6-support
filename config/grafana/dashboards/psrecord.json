@@ -304,7 +304,7 @@
             "axisLabel": "CPU Utilisation %",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "drawStyle": "bars",
+            "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
@@ -525,6 +525,6 @@
   "timezone": "",
   "title": "psrecord",
   "uid": "cQSsI644z",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
