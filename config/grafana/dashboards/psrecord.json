@@ -506,7 +506,7 @@
           ]
         }
       ],
-      "title": "psrecord Nginx CPU & Memroy Usage",
+      "title": "psrecord Nginx CPU & Memory Usage",
       "type": "timeseries"
     }
   ],
@@ -518,13 +518,13 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "psrecord",
   "uid": "cQSsI644z",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
