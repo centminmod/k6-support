@@ -20,14 +20,20 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
-      - '--log.level=debug'  # Keeping original debug logging
+      - '--log.level=debug'
     ports:
-      - 9199:9090
+      - "9199:9090"
     volumes:
-      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     networks:
       - k6-support
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   influxdb:
       image: influxdb:2.7
@@ -35,41 +41,62 @@ services:
       dns: ["172.18.0.1"]
       restart: unless-stopped
       environment:
-        - DOCKER_INFLUXDB_INIT_MODE=setup
-        - DOCKER_INFLUXDB_INIT_USERNAME=admin
-        - DOCKER_INFLUXDB_INIT_PASSWORD=password
-        - DOCKER_INFLUXDB_INIT_ORG=myorg
-        - DOCKER_INFLUXDB_INIT_BUCKET=k6
-        - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN:-your-super-secret-admin-token}
+        # Initial setup
+        - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+        - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+        - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+        - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+        - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+        - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+        - DOCKER_INFLUXDB_INIT_RETENTION=${DOCKER_INFLUXDB_INIT_RETENTION}
+        - DOCKER_INFLUXDB_INIT_PORT=${DOCKER_INFLUXDB_INIT_PORT}
+        - DOCKER_INFLUXDB_INIT_HOST=${DOCKER_INFLUXDB_INIT_HOST}
         # V1 API Compatibility
         - INFLUXDB_HTTP_AUTH_ENABLED=true
         - INFLUXDB_HTTP_BIND_ADDRESS=:8086
-        - DOCKER_INFLUXDB_INIT_RETENTION=0
         - DOCKER_INFLUXDB_INIT_V1_SUPPORT_ENABLED=true
+        # Pass through all environment variables needed by init script
+        - INFLUXDB_TELEGRAF_USER
+        - INFLUXDB_TELEGRAF_PASSWORD
+        - INFLUXDB_K6_USER
+        - INFLUXDB_K6_PASSWORD
+        - INFLUXDB_PSRECORD_USER
+        - INFLUXDB_PSRECORD_PASSWORD
+        - INFLUXDB_DB_K6
+        - INFLUXDB_DB_TELEGRAF
+        - INFLUXDB_DB_PSRECORD
+        - INFLUX_TOKEN
       volumes:
         - influxdb_data:/var/lib/influxdb2
-        - ./config/influxdb:/etc/influxdb2
-        - ./config/influxdb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+        - ./config/influxdb/init:/docker-entrypoint-initdb.d:ro
       ports:
-        - 8186:8086
+        - "8186:8086"
       networks:
         - k6-support
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 40s
 
   telegraf:
     image: telegraf:1.28
     container_name: k6-support-telegraf
     dns: ["172.18.0.1"]
     user: root
+    group_add:
+      - ${DOCKER_GROUP_ID:-999}
     restart: unless-stopped
     environment:
       - HOST_PROC=/host/proc
       - HOST_SYS=/host/sys
       - HOST_ETC=/host/etc
-      - HOST_VAR=/hostfs/var  # Keeping original host mappings
+      - HOST_VAR=/hostfs/var
       - HOST_RUN=/hostfs/run
       - HOST_MOUNT_PREFIX=/hostfs
       - INFLUX_TOKEN=${INFLUX_TOKEN}
-    privileged: true  # Kept for existing functionality
+    privileged: true
     volumes:
       - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
       - ./config/telegraf/telegraf.d:/etc/telegraf/telegraf.d:ro
@@ -78,13 +105,18 @@ services:
       - /proc:/host/proc:ro
       - /etc:/host/etc:ro
     depends_on:
-      - influxdb
-    links:
-      - influxdb  # Keeping for compatibility
+      influxdb:
+        condition: service_healthy
     ports:
-      - '127.0.0.1:8125:8125/udp'  # Kept for existing functionality
+      - "127.0.0.1:8125:8125/udp"
     networks:
       - k6-support
+    healthcheck:
+      test: ["CMD", "telegraf", "--test", "--config", "/etc/telegraf/telegraf.conf"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   grafana:
     image: grafana/grafana-oss:10.2.0
@@ -97,17 +129,28 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel
     ports:
-      - 9409:3000
+      - "9409:3000"
     volumes:
-      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./config/grafana/dashboards/k6:/var/lib/grafana/dashboards/k6
-      - ./config/grafana/dashboards/influxdb:/var/lib/grafana/dashboards/influxdb
-      - ./config/grafana/dashboards/system:/var/lib/grafana/dashboards/system
-      - ./config/grafana/dashboards/cloudflare:/var/lib/grafana/dashboards/cloudflare
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./config/grafana/dashboards/k6:/var/lib/grafana/dashboards/k6:ro
+      - ./config/grafana/dashboards/influxdb:/var/lib/grafana/dashboards/influxdb:ro
+      - ./config/grafana/dashboards/system:/var/lib/grafana/dashboards/system:ro
+      - ./config/grafana/dashboards/cloudflare:/var/lib/grafana/dashboards/cloudflare:ro
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
     networks:
       - k6-support
+    depends_on:
+      influxdb:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -125,7 +168,13 @@ services:
     networks:
       - k6-support
     ports:
-      - 9100:9100
+      - "9100:9100"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   cloudflare-exporter:
     image: cyb3rjak3/cloudflare-exporter:latest
@@ -133,19 +182,22 @@ services:
     dns: ["172.18.0.1"]
     restart: unless-stopped
     environment:
-      # Required
       - CF_API_TOKEN=${CF_API_TOKEN}
       - CF_ZONES=${CF_ZONES}
-      # Optional with defaults
-      - SCRAPE_DELAY=300  # Default 300 seconds (5 minutes)
-      - LISTEN=:8080      # Default port
+      - SCRAPE_DELAY=300
+      - LISTEN=:8080
       - METRICS_PATH=/metrics
-      - CF_BATCH_SIZE=10  # Default 10
-      - FREE_TIER=false   # Default false
-      # Optional exclusions
-      - CF_EXCLUDE_ZONES=${CF_EXCLUDE_ZONES:-}  # Optional
-      - METRICS_DENYLIST=${METRICS_DENYLIST:-}  # Optional
+      - CF_BATCH_SIZE=10
+      - FREE_TIER=false
+      - CF_EXCLUDE_ZONES=${CF_EXCLUDE_ZONES:-}
+      - METRICS_DENYLIST=${METRICS_DENYLIST:-}
     ports:
-      - "9198:8080"      # Map container's 8080 to host's 9198
+      - "9198:8080"
     networks:
       - k6-support
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
