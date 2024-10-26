@@ -96,8 +96,11 @@ services:
       - 9409:3000
     volumes:
       - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./config/grafana/dashboards/k6:/var/lib/grafana/dashboards/k6
+      - ./config/grafana/dashboards/influxdb:/var/lib/grafana/dashboards/influxdb
+      - ./config/grafana/dashboards/system:/var/lib/grafana/dashboards/system
+      - ./config/grafana/dashboards/cloudflare:/var/lib/grafana/dashboards/cloudflare
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
       - grafana_data:/var/lib/grafana
     networks:
       - k6-support
@@ -120,18 +123,24 @@ services:
     ports:
       - 9100:9100
 
-  cloudflare-exporter:
-    image: cloudflare-exporter:latest
-    build:
-      context: ./cloudflare-exporter
-      dockerfile: Dockerfile
-    container_name: k6-support-cloudflare-exporter  # Named to match existing pattern
+cloudflare-exporter:
+    image: cyb3rjak3/cloudflare-exporter:latest
+    container_name: k6-support-cloudflare-exporter
     restart: unless-stopped
     environment:
+      # Required
       - CF_API_TOKEN=${CF_API_TOKEN}
       - CF_ZONES=${CF_ZONES}
-      - CF_POLL_INTERVAL=5m
+      # Optional with defaults
+      - SCRAPE_DELAY=300  # Default 300 seconds (5 minutes)
+      - LISTEN=:8080      # Default port
+      - METRICS_PATH=/metrics
+      - CF_BATCH_SIZE=10  # Default 10
+      - FREE_TIER=false   # Default false
+      # Optional exclusions
+      - CF_EXCLUDE_ZONES=${CF_EXCLUDE_ZONES:-}  # Optional
+      - METRICS_DENYLIST=${METRICS_DENYLIST:-}  # Optional
     ports:
-      - "9198:9199"  # Changed to avoid conflict with prometheus port
+      - "9198:8080"      # Map container's 8080 to host's 9198
     networks:
       - k6-support

@@ -160,7 +160,10 @@ GRAFANA_ADMIN_PASSWORD=admin
 
 # Cloudflare Configuration
 CF_API_TOKEN=your-cloudflare-api-token
-CF_ZONES=your-zone-ids
+CF_ZONES=zone1,zone2  # Comma-separated zone IDs, optional if you want all zones
+# Optional configurations
+CF_EXCLUDE_ZONES=  # Comma-separated zone IDs to exclude
+METRICS_DENYLIST=  # Comma-separated metrics to exclude
 
 # Legacy Compatibility
 INFLUXDB_TELEGRAF_USER=telegraf

@@ -1,199 +1,109 @@
 apiVersion: 1
 
-# list of datasources to insert/update depending
-# what's available in the database
 datasources:
-   # <string, required> name of the datasource. Required
-   - name: prometheus
+  - name: prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    version: 1
 
-     # <string, required> datasource type. Required 
-     type: prometheus
-
-     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
-     access: proxy
-     
-     # <int> org id. will default to orgId 1 if not specified
-     orgId: 1
-
-     # <string> url
-     url: http://prometheus:9090
-
-     # <bool> mark as default datasource. Max one per org
-     isDefault: true
-     
-     # <bool> allow users to edit datasources from the UI.
-     editable: false
-
-     version: 1
-
-  # <string, required> name of the datasource. Required
-   - name: influxDB
-
-     # <string, required> datasource type. Required 
-     type: influxdb
-
-     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
-     access: proxy
-     
-     # <int> org id. will default to orgId 1 if not specified
-     orgId: 1
-
-     # <string> url
-     url: http://influxdb:8086
-
-     # <string> database
-     database: k6
-
-     # <string> user
-     user: k6
-
-     # <bool> enable/disable basic auth
-     basicAuth: true
-    
-     # <string> basic auth username
-     basicAuthUser: admin
-     
-     # <string> Deprecated, use secureJsonData.basicAuthPassword
-     basicAuthPassword: password
-     
-     jsonData:
+  - name: influxDB
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: k6
       httpMode: GET
-     secureJsonData:
-      password: k6
+      v1Compatibility: true
+      v1Database: k6
+      v1User: k6
+    secureJsonData:
+      v1Password: k6
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-     # <bool> mark as default datasource. Max one per org
-     isDefault: false
-     
-     # <bool> allow users to edit datasources from the UI.
-     editable: true
-
-     version: 1
-
-  # <string, required> name of the datasource. Required
-   - name: influxDB-telegraf
-
-     # <string, required> datasource type. Required 
-     type: influxdb
-
-     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
-     access: proxy
-     
-     # <int> org id. will default to orgId 1 if not specified
-     orgId: 1
-
-     # <string> url
-     url: http://influxdb:8086
-
-     # <string> database
-     database: telegraf
-
-     # <string> user
-     user: telegraf
-
-     # <bool> enable/disable basic auth
-     basicAuth: true
-    
-     # <string> basic auth username
-     basicAuthUser: admin
-     
-     # <string> Deprecated, use secureJsonData.basicAuthPassword
-     basicAuthPassword: password
-     
-     jsonData:
+  - name: influxDB-telegraf
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: telegraf
       httpMode: GET
-     secureJsonData:
-      password: password
+      v1Compatibility: true
+      v1Database: telegraf
+      v1User: telegraf
+    secureJsonData:
+      v1Password: password
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-     # <bool> mark as default datasource. Max one per org
-     isDefault: false
-     
-     # <bool> allow users to edit datasources from the UI.
-     editable: true
-
-     version: 1
-
-  # <string, required> name of the datasource. Required
-   - name: influxDB-psrecord
-
-     # <string, required> datasource type. Required 
-     type: influxdb
-
-     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
-     access: proxy
-     
-     # <int> org id. will default to orgId 1 if not specified
-     orgId: 1
-
-     # <string> url
-     url: http://influxdb:8086
-
-     # <string> database
-     database: psrecord
-
-     # <string> user
-     user: psrecord
-
-     # <bool> enable/disable basic auth
-     basicAuth: true
-    
-     # <string> basic auth username
-     basicAuthUser: admin
-     
-     # <string> Deprecated, use secureJsonData.basicAuthPassword
-     basicAuthPassword: password
-     
-     jsonData:
+  - name: influxDB-psrecord
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: psrecord
       httpMode: GET
-     secureJsonData:
-      password: password
+      v1Compatibility: true
+      v1Database: psrecord
+      v1User: psrecord
+    secureJsonData:
+      v1Password: password
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-     # <bool> mark as default datasource. Max one per org
-     isDefault: false
-     
-     # <bool> allow users to edit datasources from the UI.
-     editable: true
-
-     version: 1
-
-  # <string, required> name of the datasource. Required
-   - name: influxDB-internal-metrics
-
-     # <string, required> datasource type. Required 
-     type: influxdb
-
-     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
-     access: proxy
-     
-     # <int> org id. will default to orgId 1 if not specified
-     orgId: 1
-
-     # <string> url
-     url: http://influxdb:8086
-
-     # <string> database
-     database: _internal
-
-     # <string> user
-     user: admin
-
-     # <bool> enable/disable basic auth
-     basicAuth: true
-    
-     # <string> basic auth username
-     basicAuthUser: admin
-     
-     # <string> Deprecated, use secureJsonData.basicAuthPassword
-     basicAuthPassword: password
-     
-     jsonData:
+  - name: influxDB-internal-metrics
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: _internal
       httpMode: GET
-     secureJsonData:
-      password: password
+      v1Compatibility: true
+      v1Database: _internal
+      v1User: admin
+    secureJsonData:
+      v1Password: password
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-     # <bool> mark as default datasource. Max one per org
-     isDefault: false
-     
-     # <bool> allow users to edit datasources from the UI.
-     editable: true
-
-     version: 1
+  - name: influxDB-cloudflare
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: cloudflare
+      httpMode: GET
+      v1Compatibility: true
+      v1Database: cloudflare
+    secureJsonData:
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1

@@ -26,19 +26,15 @@ scrape_configs:
 
   # New Cloudflare job
   - job_name: 'cloudflare'
-    metrics_path: '/metrics'
-    scrape_interval: 5m
+    metrics_path: '/metrics'    # Matches METRICS_PATH
+    scrape_interval: 5m        # Matches SCRAPE_DELAY
     scrape_timeout: 30s
     static_configs:
-      - targets: ['cloudflare-exporter:9199']
+      - targets: ['cloudflare-exporter:8080']  # Use internal Docker network port
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
         replacement: 'cloudflare'
-      - source_labels: [zone]
-        target_label: zone_name
-        regex: '(.*)'
-        replacement: '$1'
 
   # Additional system monitoring
   - job_name: 'docker'
