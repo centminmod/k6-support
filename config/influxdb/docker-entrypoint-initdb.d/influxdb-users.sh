@@ -1,36 +1,117 @@
 #!/bin/bash
-# create additional influxdb users
-INFLUXDB_INIT_PORT="8086"
-INFLUXDB_ADMIN_USER="admin"
-INFLUXDB_ADMIN_PASSWORD="password"
-INFLUXDB_TELEGRAF_USER='telegraf'
-INFLUXDB_TELEGRAF_PASSWORD='password'
-INFLUXDB_K6_USER='k6'
-INFLUXDB_K6_PASSWORD='k6'
-INFLUXDB_PSRECORD_USER='psrecord'
-INFLUXDB_PSRECORD_PASSWORD='password'
-INFLUXDB_DB_K6='k6'
-INFLUXDB_DB_TELEGRAF='telegraf'
-INFLUXDB_DB_PSRECORD='psrecord'
 
-influx -host 127.0.0.1 -port $INFLUXDB_INIT_PORT \
-       -execute "CREATE USER \"$INFLUXDB_ADMIN_USER\" WITH PASSWORD '$INFLUXDB_ADMIN_PASSWORD' WITH ALL PRIVILEGES"
+# Environment variables for InfluxDB 2.x setup
+export DOCKER_INFLUXDB_INIT_MODE="setup"
+export DOCKER_INFLUXDB_INIT_USERNAME="admin"
+export DOCKER_INFLUXDB_INIT_PASSWORD="password"
+export DOCKER_INFLUXDB_INIT_ORG="myorg"
+export DOCKER_INFLUXDB_INIT_BUCKET="k6"
+export DOCKER_INFLUXDB_INIT_ADMIN_TOKEN="your-super-secret-admin-token"
 
-INFLUX_CMD="influx -host 127.0.0.1 -port $INFLUXDB_INIT_PORT -username ${INFLUXDB_ADMIN_USER} -password ${INFLUXDB_ADMIN_PASSWORD} -execute "
+# Wait for InfluxDB to be ready
+echo "Waiting for InfluxDB to start..."
+timeout 60 bash -c 'until curl -s http://localhost:8086/health | grep -q "ready"; do sleep 1; done'
+echo "InfluxDB is ready"
 
-$INFLUX_CMD "CREATE USER \"$INFLUXDB_TELEGRAF_USER\" WITH PASSWORD '$INFLUXDB_TELEGRAF_PASSWORD'"
-$INFLUX_CMD "CREATE USER \"$INFLUXDB_K6_USER\" WITH PASSWORD '$INFLUXDB_K6_PASSWORD'"
-$INFLUX_CMD "CREATE USER \"$INFLUXDB_PSRECORD_USER\" WITH PASSWORD '$INFLUXDB_PSRECORD_PASSWORD'"
+# Function to create a bucket if it doesn't exist
+create_bucket() {
+    local bucket_name=$1
+    local retention_period=$2
+    influx bucket create \
+        --name "${bucket_name}" \
+        --org "${DOCKER_INFLUXDB_INIT_ORG}" \
+        --retention "${retention_period}"
+}
 
-$INFLUX_CMD "CREATE DATABASE $INFLUXDB_DB_K6"
-$INFLUX_CMD "CREATE DATABASE $INFLUXDB_DB_TELEGRAF"
-$INFLUX_CMD "CREATE DATABASE $INFLUXDB_DB_PSRECORD"
+# Function to create a token for a user with specific permissions
+create_user_token() {
+    local username=$1
+    local bucket=$2
+    influx auth create \
+        --org "${DOCKER_INFLUXDB_INIT_ORG}" \
+        --user "${username}" \
+        --read-bucket "${bucket}" \
+        --write-bucket "${bucket}"
+}
 
-$INFLUX_CMD "REVOKE ALL PRIVILEGES FROM \"$INFLUXDB_K6_USER\""
-$INFLUX_CMD "GRANT ALL ON \"$INFLUXDB_DB_K6\" TO \"$INFLUXDB_K6_USER\""
+# Setup K6 compatibility
+echo "Setting up K6 compatibility..."
+create_bucket "k6" "0s"
+K6_TOKEN=$(create_user_token "k6" "k6")
+echo "K6_TOKEN=${K6_TOKEN}"
 
-$INFLUX_CMD "REVOKE ALL PRIVILEGES FROM \"$INFLUXDB_TELEGRAF_USER\""
-$INFLUX_CMD "GRANT ALL ON \"$INFLUXDB_DB_TELEGRAF\" TO \"$INFLUXDB_TELEGRAF_USER\""
+# Setup Telegraf compatibility
+echo "Setting up Telegraf compatibility..."
+create_bucket "telegraf" "0s"
+TELEGRAF_TOKEN=$(create_user_token "telegraf" "telegraf")
+echo "TELEGRAF_TOKEN=${TELEGRAF_TOKEN}"
 
-$INFLUX_CMD "REVOKE ALL PRIVILEGES FROM \"$INFLUXDB_PSRECORD_USER\""
-$INFLUX_CMD "GRANT ALL ON \"$INFLUXDB_DB_PSRECORD\" TO \"$INFLUXDB_PSRECORD_USER\""
+# Setup PSRecord compatibility
+echo "Setting up PSRecord compatibility..."
+create_bucket "psrecord" "0s"
+PSRECORD_TOKEN=$(create_user_token "psrecord" "psrecord")
+echo "PSRECORD_TOKEN=${PSRECORD_TOKEN}"
+
+# Create V1 compatibility API mappings for K6
+echo "Setting up V1 compatibility mappings for K6..."
+influx v1 dbrp create \
+    --bucket-id $(influx bucket list --name k6 --hide-headers | cut -f 1) \
+    --db k6 \
+    --rp autogen \
+    --default \
+    --org "${DOCKER_INFLUXDB_INIT_ORG}"
+
+# Create V1 compatibility API mappings for Telegraf
+echo "Setting up V1 compatibility mappings for Telegraf..."
+influx v1 dbrp create \
+    --bucket-id $(influx bucket list --name telegraf --hide-headers | cut -f 1) \
+    --db telegraf \
+    --rp autogen \
+    --default \
+    --org "${DOCKER_INFLUXDB_INIT_ORG}"
+
+# Create V1 compatibility API mappings for PSRecord
+echo "Setting up V1 compatibility mappings for PSRecord..."
+influx v1 dbrp create \
+    --bucket-id $(influx bucket list --name psrecord --hide-headers | cut -f 1) \
+    --db psrecord \
+    --rp autogen \
+    --default \
+    --org "${DOCKER_INFLUXDB_INIT_ORG}"
+
+# Create auth for V1 API compatibility
+echo "Setting up V1 API compatibility..."
+influx v1 auth create \
+    --username k6 \
+    --password k6 \
+    --read-bucket $(influx bucket list --name k6 --hide-headers | cut -f 1) \
+    --write-bucket $(influx bucket list --name k6 --hide-headers | cut -f 1)
+
+influx v1 auth create \
+    --username telegraf \
+    --password password \
+    --read-bucket $(influx bucket list --name telegraf --hide-headers | cut -f 1) \
+    --write-bucket $(influx bucket list --name telegraf --hide-headers | cut -f 1)
+
+influx v1 auth create \
+    --username psrecord \
+    --password password \
+    --read-bucket $(influx bucket list --name psrecord --hide-headers | cut -f 1) \
+    --write-bucket $(influx bucket list --name psrecord --hide-headers | cut -f 1)
+
+echo "Setting up V1 compatibility mappings for internal metrics..."
+influx v1 dbrp create \
+    --bucket-id $(influx bucket list --name _internal --hide-headers | cut -f 1) \
+    --db _internal \
+    --rp autogen \
+    --default \
+    --org "${DOCKER_INFLUXDB_INIT_ORG}"
+
+# Add internal metrics auth
+influx v1 auth create \
+    --username admin \
+    --password password \
+    --read-bucket $(influx bucket list --name _internal --hide-headers | cut -f 1) \
+    --write-bucket $(influx bucket list --name _internal --hide-headers | cut -f 1)
+
+echo "InfluxDB 2.x initialization complete!"

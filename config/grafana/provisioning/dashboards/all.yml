@@ -1,21 +1,92 @@
 apiVersion: 1
 
-providers:
-  # <string> an unique provider name. Required
-  - name: default
+datasources:
+  - name: prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    version: 1
 
-    # <int> Org id. Default to 1
-    orgId: 1             # id of the org to hold the dashboard
+  - name: influxDB
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: k6
+      httpMode: GET
+      # Enable v1 compatibility mode
+      v1Compatibility: true
+      v1Database: k6
+      v1User: k6
+    secureJsonData:
+      v1Password: k6
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-    # <string> name of the dashboard folder.
-    folder: ''
+  - name: influxDB-telegraf
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: telegraf
+      httpMode: GET
+      v1Compatibility: true
+      v1Database: telegraf
+      v1User: telegraf
+    secureJsonData:
+      v1Password: password
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-    # <string> provider type. Default to 'file'
-    type: file
+  - name: influxDB-psrecord
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: psrecord
+      httpMode: GET
+      v1Compatibility: true
+      v1Database: psrecord
+      v1User: psrecord
+    secureJsonData:
+      v1Password: password
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1
 
-    # <bool> disable dashboard deletion
-    disableDeletion: true
-
-    options:
-      # <string, required> path to dashboard files on disk. Required when using the 'file' type
-      path: /var/lib/grafana/dashboards
+  - name: influxDB-internal-metrics
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: myorg
+      defaultBucket: _internal
+      httpMode: GET
+      v1Compatibility: true
+      v1Database: _internal
+      v1User: admin
+    secureJsonData:
+      v1Password: password
+      token: ${INFLUX_TOKEN}
+    isDefault: false
+    editable: true
+    version: 1

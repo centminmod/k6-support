@@ -1,25 +1,54 @@
 global:
-  scrape_interval: 15s # By default, scrape targets every 15 seconds.
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
 
-  # Attach these labels to any time series or alerts when communicating with
-  # external systems (federation, remote storage, Alertmanager).
   external_labels:
-    monitor: "k6-support"
+    monitor: "k6-support"  # Keeping your original monitor name
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
+# Rule files
+rule_files:
+  - "rules/*.yml"
+
 scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  # Original K6 Prometheus job
   - job_name: "prometheus"
-
-    # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
-
+    scrape_interval: 5s  # Keeping your original interval
     static_configs:
       - targets: ["localhost:9090"]
 
+  # Original Node Exporter job
   - job_name: "node-exporter"
-    scrape_interval: 10s
+    scrape_interval: 10s  # Keeping your original interval
     scrape_timeout: 10s
     static_configs:
       - targets: ["node-exporter:9100"]
+
+  # New Cloudflare job
+  - job_name: 'cloudflare'
+    metrics_path: '/metrics'
+    scrape_interval: 5m
+    scrape_timeout: 30s
+    static_configs:
+      - targets: ['cloudflare-exporter:9199']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'cloudflare'
+      - source_labels: [zone]
+        target_label: zone_name
+        regex: '(.*)'
+        replacement: '$1'
+
+  # Additional system monitoring
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['telegraf:9273']
+
+  - job_name: 'telegraf'
+    static_configs:
+      - targets: ['telegraf:9273']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'telegraf_.*'
+        action: keep
