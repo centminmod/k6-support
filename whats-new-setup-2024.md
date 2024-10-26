@@ -45,38 +45,37 @@
 
 The required Cloudflare API token permissions:
 
-Read-Only Access (If you only need monitoring):
-- Zone Analytics:
-  * Analytics Read
-- Zone:
-  * Zone Read
-- DNS:
-  * DNS Read
-- Health Check:
-  * Healthchecks Read
-- WebRTC:
-  * Stats Read
-- WAF:
-  * Read
+**Read-Only Access (For Monitoring):**
 
-Edit Access (If you need monitoring and management):
-- Zone Analytics:
-  * Analytics Read
-- Zone:
-  * Zone Read
-  * Zone Edit
-- DNS:
-  * DNS Read 
-  * DNS Edit
-- Health Check:
-  * Healthchecks Read
-  * Healthchecks Edit
-- WebRTC:
-  * Stats Read
-  * Stats Edit
-- WAF:
-  * Read
-  * Edit
+* **Zone-Level Metrics:**
+    * **Analytics: Read** (required for zone-level metrics)
+    * **Zone: Zone Read**
+    * **DNS: DNS Read**
+    * **Health Check: Healthchecks Read**
+    * **WebRTC: Stats Read**
+    * **WAF: Read**
+    * **Firewall Services: Read** (to fetch zone rule names for `cloudflare_zone_firewall_events_count` metric)
+* **Worker Metrics:**
+    * **Account.Account Analytics: Read** (required for Worker metrics)
+    * **Account Settings: Read** (to list accessible accounts and scrape available Workers)
+* **Account Rulesets:**
+    * **Account.Account Rulesets: Read** (to fetch account rule names for `cloudflare_zone_firewall_events_count` metric)
+
+**Edit Access (For Monitoring and Management):**
+
+* **Zone-Level:**
+    * **Analytics: Read**
+    * **Zone: Zone Read, Zone Edit**
+    * **DNS: DNS Read, DNS Edit**
+    * **Health Check: Healthchecks Read, Healthchecks Edit**
+    * **WebRTC: Stats Read, Stats Edit**
+    * **WAF: Read, Edit**
+    * **Firewall Services: Read** 
+* **Worker Metrics:**
+    * **Account.Account Analytics: Read**
+    * **Account Settings: Read** 
+* **Account Rulesets:**
+    * **Account.Account Rulesets: Read** (to fetch account rule names for `cloudflare_zone_firewall_events_count` metric)
 
 Additional Important Settings:
 - Zone Resources:
