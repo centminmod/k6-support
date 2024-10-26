@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# Environment variables for InfluxDB 2.x setup
-export DOCKER_INFLUXDB_INIT_MODE="setup"
-export DOCKER_INFLUXDB_INIT_USERNAME="admin"
-export DOCKER_INFLUXDB_INIT_PASSWORD="password"
-export DOCKER_INFLUXDB_INIT_ORG="myorg"
-export DOCKER_INFLUXDB_INIT_BUCKET="k6"
-export DOCKER_INFLUXDB_INIT_ADMIN_TOKEN="your-super-secret-admin-token"
-
 # Wait for InfluxDB to be ready
 echo "Waiting for InfluxDB to start..."
 timeout 60 bash -c 'until curl -s http://localhost:8086/health | grep -q "ready"; do sleep 1; done'
@@ -20,7 +12,7 @@ create_bucket() {
     influx bucket create \
         --name "${bucket_name}" \
         --org "${DOCKER_INFLUXDB_INIT_ORG}" \
-        --retention "${retention_period}"
+        --retention "${DOCKER_INFLUXDB_INIT_RETENTION}" 
 }
 
 # Function to create a token for a user with specific permissions
