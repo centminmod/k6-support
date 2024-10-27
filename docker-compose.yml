@@ -81,7 +81,7 @@ services:
         start_period: 40s
 
   telegraf:
-    image: telegraf:1.32
+    image: telegraf:1.27
     container_name: k6-support-telegraf
     dns: ["172.18.0.1"]
     user: "telegraf:${DOCKER_GROUP_ID}"
