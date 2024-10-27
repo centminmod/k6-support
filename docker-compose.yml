@@ -98,6 +98,10 @@ services:
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - TELEGRAF_INFLUXDB_USER=${TELEGRAF_INFLUXDB_USER}
       - TELEGRAF_INFLUXDB_PASSWORD=${TELEGRAF_INFLUXDB_PASSWORD}
+      # InfluxDB v2 variables for cloudflare metrics
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      # Database name
       - INFLUXDB_DB_TELEGRAF=${INFLUXDB_DB_TELEGRAF}
     privileged: false
     volumes:
@@ -184,7 +188,10 @@ services:
   cloudflare-exporter:
     image: cyb3rjak3/cloudflare-exporter:latest
     container_name: k6-support-cloudflare-exporter
-    dns: ["172.18.0.1"]
+    dns: 
+      - "172.18.0.1"  # Keep Docker bridge DNS
+      - "1.1.1.1"     # Add Cloudflare's DNS as backup
+      - "8.8.8.8"     # Add Google's DNS as additional backup
     restart: unless-stopped
     environment:
       - CF_API_TOKEN=${CF_API_TOKEN}
