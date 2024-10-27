@@ -84,7 +84,7 @@ services:
     image: telegraf:1.28
     container_name: k6-support-telegraf
     dns: ["172.18.0.1"]
-    user: root
+    user: "telegraf:${DOCKER_GROUP_ID}"
     group_add:
       - ${DOCKER_GROUP_ID:-999}
     restart: unless-stopped
@@ -96,7 +96,10 @@ services:
       - HOST_RUN=/hostfs/run
       - HOST_MOUNT_PREFIX=/hostfs
       - INFLUX_TOKEN=${INFLUX_TOKEN}
-    privileged: true
+      - TELEGRAF_INFLUXDB_USER=${TELEGRAF_INFLUXDB_USER}
+      - TELEGRAF_INFLUXDB_PASSWORD=${TELEGRAF_INFLUXDB_PASSWORD}
+      - INFLUXDB_DB_TELEGRAF=${INFLUXDB_DB_TELEGRAF}
+    privileged: false
     volumes:
       - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
       - ./config/telegraf/telegraf.d:/etc/telegraf/telegraf.d:ro
@@ -106,6 +109,8 @@ services:
       - /etc:/host/etc:ro
     depends_on:
       influxdb:
+        condition: service_healthy
+      cloudflare-exporter:
         condition: service_healthy
     ports:
       - "127.0.0.1:8125:8125/udp"

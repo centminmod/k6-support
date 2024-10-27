@@ -142,9 +142,17 @@ mkdir -p config/{grafana/{provisioning/{datasources,dashboards},dashboards},tele
 ```
 
 2. Create Environment File
+
+```bash
+cp -a example.env .env
+DOCKER_GID=$(getent group docker | cut -d: -f3)
+echo "DOCKER_GROUP_ID=$DOCKER_GID" >> .env
+```
 ```bash
 # Create .env file
 cat << EOF > .env
+DOCKER_GROUP_ID=955
+
 # InfluxDB Configuration
 DOCKER_INFLUXDB_INIT_MODE=setup
 DOCKER_INFLUXDB_INIT_USERNAME=admin
