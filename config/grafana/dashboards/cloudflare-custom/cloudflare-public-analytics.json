@@ -592,6 +592,447 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "description": "HTTP Requests By Status",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 103,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "10.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "topk(20, cloudflare_prometheus_cloudflare_zone_requests_status)",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "HTTP Requests By Status",
+      "transformations": [],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "description": "WAF Events By Country",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 102,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "10.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "topk(20, sum by(country) (cloudflare_prometheus_cloudflare_zone_firewall_events_count))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "WAF Events By Country",
+      "transformations": [],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "description": "HTTP Requests By Host Country Status",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 104,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "10.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "cloudflare_zone_requests_status_country_host",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "{{host}}-{{country}}-{{status}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "HTTP Requests By Host Country Status",
+      "transformations": [],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "description": "WAF Events By Action",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 101,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "10.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "topk(20, sum by(action) (cloudflare_prometheus_cloudflare_zone_firewall_events_count))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "WAF Events By Action",
+      "transformations": [],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
       "datasource": {},
       "description": "Search Bots %",
       "fieldConfig": {
@@ -615,7 +1056,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 24
       },
       "id": 95,
       "interval": "5m",
@@ -842,7 +1283,7 @@
         "type": "prometheus",
         "uid": "P1809F7CD0C75ACF3"
       },
-      "description": "WAF Events By Country",
+      "description": "WAF Events By Classification",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -856,7 +1297,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 25,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -865,13 +1306,6 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -881,7 +1315,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -908,9 +1342,9 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 31
       },
-      "id": 102,
+      "id": 99,
       "options": {
         "legend": {
           "calcs": [],
@@ -920,10 +1354,9 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "desc"
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -932,7 +1365,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk(20, sum by(country) (cloudflare_prometheus_cloudflare_zone_firewall_events_count))",
+          "expr": "sum by(source) (cloudflare_prometheus_cloudflare_zone_firewall_events_count)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -942,8 +1375,7 @@
           "useBackend": false
         }
       ],
-      "title": "WAF Events By Country",
-      "transformations": [],
+      "title": "WAF Events By Classification",
       "transparent": true,
       "type": "timeseries"
     },
@@ -971,7 +1403,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 31
       },
       "id": 98,
       "interval": "5m",
@@ -1190,7 +1622,6 @@
         "type": "prometheus",
         "uid": "P1809F7CD0C75ACF3"
       },
-      "description": "WAF Events By Action",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1204,7 +1635,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 25,
+            "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -1213,28 +1644,22 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
             }
           },
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1248,7 +1673,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
@@ -1256,42 +1682,61 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 38
       },
-      "id": 101,
+      "id": 91,
+      "interval": "1m",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "desc"
+          "sort": "none"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "7.1.5",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk(20, sum by(action) (cloudflare_prometheus_cloudflare_zone_firewall_events_count))",
+          "expr": "rate(cloudflare_zone_requests_total[10m])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
+          "interval": "",
+          "intervalFactor": 10,
+          "legendFormat": "total",
           "range": true,
           "refId": "A",
           "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "rate(cloudflare_zone_requests_cached{zone=~\"elhacker.net\"}[10m])",
+          "interval": "",
+          "intervalFactor": 10,
+          "legendFormat": "cached",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "WAF Events By Action",
-      "transformations": [],
+      "title": "Requests / second",
       "transparent": true,
       "type": "timeseries"
     },
@@ -1322,7 +1767,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 38
       },
       "id": 28,
       "maxDataPoints": 1,
@@ -1512,185 +1957,6 @@
         "type": "prometheus",
         "uid": "P1809F7CD0C75ACF3"
       },
-      "description": "WAF Events By Classification",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 31
-      },
-      "id": 99,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(source) (cloudflare_prometheus_cloudflare_zone_firewall_events_count)",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "WAF Events By Classification",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "decimals": 0,
-          "mappings": [],
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 32
-      },
-      "id": 11,
-      "maxDataPoints": 1,
-      "options": {
-        "displayLabels": [
-          "name"
-        ],
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "values": [
-            "percent"
-          ]
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_content_type",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{content_type}}",
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Request Content Type",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1748,12 +2014,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 12,
         "w": 12,
         "x": 0,
-        "y": 38
+        "y": 45
       },
-      "id": 91,
+      "id": 89,
       "interval": "1m",
       "options": {
         "legend": {
@@ -1769,7 +2035,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "pluginVersion": "7.1.5",
@@ -1781,33 +2047,221 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "rate(cloudflare_zone_requests_total[10m])",
+          "expr": "cloudflare_zone_requests_status{status!~\"2..\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "interval": "",
           "intervalFactor": 10,
-          "legendFormat": "total",
+          "legendFormat": "{{status}}",
           "range": true,
           "refId": "A",
           "useBackend": false
+        }
+      ],
+      "title": "Requests / Second (status codes not 2XX)",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(429.*)",
+            "renamePattern": "429 - Rate Limited"
+          }
         },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(403.*)",
+            "renamePattern": "403 - Forbidden"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(301.*)",
+            "renamePattern": "301 -Moved Permanently"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(302.*)",
+            "renamePattern": "302 - Found"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(304.*)",
+            "renamePattern": "304 - Not Modified "
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(405.*)",
+            "renamePattern": "405 - Method Not Allowed"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(414.*)",
+            "renamePattern": "414 - Request-URI Too Long"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(499.*)",
+            "renamePattern": "499 - Client Closed Request"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(520.*)",
+            "renamePattern": "520 - Origin Error"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(521.*)",
+            "renamePattern": "521 - Origin Down"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(522.*)",
+            "renamePattern": "522 - Origin Connection Time-out"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(524.*)",
+            "renamePattern": "524 - Timeout occurred"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(525.*)",
+            "renamePattern": "525 - Origin SSL Handshake Error "
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(504.*)",
+            "renamePattern": "504 - Gateway Timeout error"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(404.*)",
+            "renamePattern": "404 - Not Found"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "Time",
+                "403 - Forbidden",
+                "404 - Not Found",
+                "414 - Request-URI Too Long",
+                "429 - Rate Limited",
+                "499 - Client Closed Request"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "id": 11,
+      "maxDataPoints": 1,
+      "options": {
+        "displayLabels": [
+          "name"
+        ],
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "expr": "rate(cloudflare_zone_requests_cached{zone=~\"elhacker.net\"}[10m])",
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "cloudflare_zone_requests_content_type",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": true,
           "interval": "",
-          "intervalFactor": 10,
-          "legendFormat": "cached",
-          "range": true,
-          "refId": "B"
+          "legendFormat": "{{content_type}}",
+          "refId": "A",
+          "useBackend": false
         }
       ],
-      "title": "Requests / second",
+      "title": "Request Content Type",
       "transparent": true,
-      "type": "timeseries"
+      "type": "piechart"
     },
     {
       "datasource": {
@@ -1836,7 +2290,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 56
       },
       "id": 94,
       "interval": "5m",
@@ -2094,238 +2548,6 @@
       ],
       "transparent": true,
       "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 45
-      },
-      "id": 89,
-      "interval": "1m",
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "pluginVersion": "7.1.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_status{status!~\"2..\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "interval": "",
-          "intervalFactor": 10,
-          "legendFormat": "{{status}}",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Requests / Second (status codes not 2XX)",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(429.*)",
-            "renamePattern": "429 - Rate Limited"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(403.*)",
-            "renamePattern": "403 - Forbidden"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(301.*)",
-            "renamePattern": "301 -Moved Permanently"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(302.*)",
-            "renamePattern": "302 - Found"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(304.*)",
-            "renamePattern": "304 - Not Modified "
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(405.*)",
-            "renamePattern": "405 - Method Not Allowed"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(414.*)",
-            "renamePattern": "414 - Request-URI Too Long"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(499.*)",
-            "renamePattern": "499 - Client Closed Request"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(520.*)",
-            "renamePattern": "520 - Origin Error"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(521.*)",
-            "renamePattern": "521 - Origin Down"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(522.*)",
-            "renamePattern": "522 - Origin Connection Time-out"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(524.*)",
-            "renamePattern": "524 - Timeout occurred"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(525.*)",
-            "renamePattern": "525 - Origin SSL Handshake Error "
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(504.*)",
-            "renamePattern": "504 - Gateway Timeout error"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(404.*)",
-            "renamePattern": "404 - Not Found"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time",
-                "403 - Forbidden",
-                "404 - Not Found",
-                "414 - Request-URI Too Long",
-                "429 - Rate Limited",
-                "499 - Client Closed Request"
-              ]
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "timeseries"
     },
     {
       "datasource": {
@@ -2735,6 +2957,6 @@
   "timezone": "",
   "title": "CloudFlare Public Analytics",
   "uid": "f9292e93-a28c-41ea-9052-ad69872b7678",
-  "version": 36,
+  "version": 39,
   "weekStart": "monday"
 }
