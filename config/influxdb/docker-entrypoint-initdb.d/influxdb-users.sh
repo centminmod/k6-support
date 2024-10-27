@@ -4,6 +4,13 @@ echo "Waiting for InfluxDB to start..."
 timeout 60 bash -c 'until curl -s http://localhost:8086/health | grep -q "ready"; do sleep 1; done'
 echo "InfluxDB is ready"
 
+echo "Setting up initial users..."
+influx user create \
+    --name "${INFLUXDB_TELEGRAF_USER}" \
+    --password "${INFLUXDB_TELEGRAF_PASSWORD}" \
+    --org "${DOCKER_INFLUXDB_INIT_ORG}" \
+    --token "${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}"
+
 # Function to create a bucket if it doesn't exist
 create_bucket() {
     local bucket_name=$1
