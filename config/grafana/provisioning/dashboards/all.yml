@@ -44,3 +44,14 @@ providers:
     allowUiUpdates: true
     options:
       path: /var/lib/grafana/dashboards/cloudflare
+
+  # Cloudflare Dashboards
+  - name: 'Cloudflare Custom'
+    orgId: 1
+    folder: 'Cloudflare Custom'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/cloudflare-custom

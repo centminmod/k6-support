@@ -71,7 +71,7 @@
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -85,7 +85,7 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -140,7 +140,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -195,7 +195,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -251,7 +251,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -307,7 +307,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -362,7 +362,7 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -422,7 +422,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -522,7 +522,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -624,7 +624,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -723,7 +723,7 @@
     },
     {
       "collapsed": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -740,7 +740,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -845,7 +845,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -946,7 +946,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1046,7 +1046,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1149,7 +1149,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1206,7 +1206,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1260,7 +1260,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1363,7 +1363,7 @@
         "label": "Others",
         "threshold": "0.01"
       },
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1416,7 +1416,7 @@
         "label": "Others",
         "threshold": "0.001"
       },
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1469,7 +1469,7 @@
         "label": "Others",
         "threshold": "0.00005"
       },
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1515,7 +1515,7 @@
     },
     {
       "collapsed": true,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1529,7 +1529,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -1638,7 +1638,7 @@
             "label": "Others",
             "threshold": 0
           },
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -1693,7 +1693,7 @@
             "label": "Others",
             "threshold": 0
           },
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -1743,7 +1743,7 @@
     },
     {
       "collapsed": true,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1757,7 +1757,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -1860,7 +1860,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -1961,7 +1961,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2072,7 +2072,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2185,7 +2185,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2298,7 +2298,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2411,7 +2411,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2524,7 +2524,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2638,7 +2638,7 @@
     },
     {
       "collapsed": true,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2652,7 +2652,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2748,7 +2748,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2844,7 +2844,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2941,7 +2941,7 @@
     },
     {
       "collapsed": true,
-      "datasource": "${DS_THANOS}",
+      "datasource": "prometheus",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2955,7 +2955,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_THANOS}",
+          "datasource": "prometheus",
           "fieldConfig": {
             "defaults": {
               "custom": {},
@@ -3069,7 +3069,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_PROMETHEUS}",
+        "datasource": "prometheus",
         "definition": "label_values(cloudflare_zone_requests_total, zone)",
         "hide": 0,
         "includeAll": false,
@@ -3091,7 +3091,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_PROMETHEUS}",
+        "datasource": "prometheus",
         "definition": "label_values(cloudflare_zone_requests_country, region)",
         "hide": 2,
         "includeAll": false,

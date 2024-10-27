@@ -35,9 +35,12 @@ scrape_configs:
   - job_name: 'telegraf'
     scrape_interval: 5s
     scrape_timeout: 4s
-    static_configs:
-      - targets: ['telegraf:9273']
-    metric_relabel_configs:
-      - source_labels: [__name__]
-        regex: '(telegraf_.*|docker_.*)'
-        action: keep
+    dns_sd_configs:
+      - names: ['telegraf']
+        type: 'A'
+        port: 9273
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.*):(.*)'
+        replacement: '${1}'

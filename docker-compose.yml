@@ -1,8 +1,13 @@
 networks:
   k6-support:
+    name: k6-support
     driver: bridge
     driver_opts:
-      com.docker.network.bridge.enable_dns_roundrobin: "true" 
+      com.docker.network.bridge.enable_dns_roundrobin: "true"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16
 
 volumes:
   prometheus_data: {}
@@ -133,6 +138,7 @@ services:
     networks:
       k6-support:
         aliases:
+          - telegraf.k6-support
           - telegraf
     healthcheck:
       test: ["CMD", "telegraf", "--test", "--config", "/etc/telegraf/telegraf.conf"]
@@ -163,6 +169,7 @@ services:
       - ./config/grafana/dashboards/influxdb:/var/lib/grafana/dashboards/influxdb:ro
       - ./config/grafana/dashboards/system:/var/lib/grafana/dashboards/system:ro
       - ./config/grafana/dashboards/cloudflare:/var/lib/grafana/dashboards/cloudflare:ro
+      - ./config/grafana/dashboards/cloudflare-custom:/var/lib/grafana/dashboards/cloudflare-custom:ro
       - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
       - ./config/grafana/provisioning/plugins:/etc/grafana/provisioning/plugins:ro
