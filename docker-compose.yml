@@ -13,6 +13,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: k6-support-prometheus
+    hostname: prometheus
     dns: 
       - "172.18.0.1"  # Keep Docker bridge DNS
       - "1.1.1.1"     # Add Cloudflare's DNS as backup
@@ -44,6 +45,7 @@ services:
   influxdb:
       image: influxdb:2.7
       container_name: k6-support-influxdb
+      hostname: influxdb
       dns: ["172.18.0.1"]
       restart: unless-stopped
       environment:
@@ -91,6 +93,7 @@ services:
   telegraf:
     image: telegraf:1.27
     container_name: k6-support-telegraf
+    hostname: telegraf
     dns: ["172.18.0.1"]
     user: "telegraf:${DOCKER_GROUP_ID}"
     group_add:
@@ -141,6 +144,7 @@ services:
   grafana:
     image: grafana/grafana-oss:10.2.0
     container_name: k6-support-grafana
+    hostname: grafana
     dns: 
       - "172.18.0.1"  # Keep Docker bridge DNS
       - "1.1.1.1"     # Add Cloudflare's DNS as backup
@@ -183,6 +187,7 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     container_name: k6-support-node-exporter
+    hostname: node-exporter
     restart: unless-stopped
     command:
       - '--path.procfs=/host/proc'
@@ -204,6 +209,7 @@ services:
   cloudflare-exporter:
     image: cyb3rjak3/cloudflare-exporter:latest
     container_name: k6-support-cloudflare-exporter
+    hostname: cloudflare-exporter
     dns: 
       - "172.18.0.1"  # Keep Docker bridge DNS
       - "1.1.1.1"     # Add Cloudflare's DNS as backup
