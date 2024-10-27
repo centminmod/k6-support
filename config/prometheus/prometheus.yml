@@ -2,49 +2,42 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   scrape_timeout: 10s
-
   external_labels:
-    monitor: "k6-support"  # Keeping your original monitor name
+    monitor: "k6-support"
 
 # Rule files
 rule_files:
   - "rules/*.yml"
 
 scrape_configs:
-  # Original K6 Prometheus job
   - job_name: "prometheus"
-    scrape_interval: 5s  # Keeping your original interval
+    scrape_interval: 5s
     static_configs:
       - targets: ["localhost:9090"]
 
-  # Original Node Exporter job
   - job_name: "node-exporter"
-    scrape_interval: 10s  # Keeping your original interval
+    scrape_interval: 10s
     scrape_timeout: 10s
     static_configs:
       - targets: ["node-exporter:9100"]
 
-  # New Cloudflare job
   - job_name: 'cloudflare'
-    metrics_path: '/metrics'    # Matches METRICS_PATH
-    scrape_interval: 5m        # Matches SCRAPE_DELAY
+    metrics_path: '/metrics'
+    scrape_interval: 5m
     scrape_timeout: 30s
     static_configs:
-      - targets: ['cloudflare-exporter:8080']  # Use internal Docker network port
+      - targets: ['cloudflare-exporter:8080']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
         replacement: 'cloudflare'
 
-  # Additional system monitoring
-  - job_name: 'docker'
-    static_configs:
-      - targets: ['telegraf:9273']
-
   - job_name: 'telegraf'
+    scrape_interval: 5s
+    scrape_timeout: 4s
     static_configs:
       - targets: ['telegraf:9273']
     metric_relabel_configs:
       - source_labels: [__name__]
-        regex: 'telegraf_.*'
+        regex: '(telegraf_.*|docker_.*)'
         action: keep
