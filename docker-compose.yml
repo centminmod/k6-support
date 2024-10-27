@@ -150,6 +150,9 @@ services:
       - ./config/grafana/dashboards/cloudflare:/var/lib/grafana/dashboards/cloudflare:ro
       - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning/plugins:/etc/grafana/provisioning/plugins:ro
+      - ./config/grafana/provisioning/notifiers:/etc/grafana/provisioning/notifiers:ro
+      - ./config/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro
     networks:
       - k6-support
     depends_on:
