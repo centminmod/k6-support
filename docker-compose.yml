@@ -130,7 +130,10 @@ services:
   grafana:
     image: grafana/grafana-oss:10.2.0
     container_name: k6-support-grafana
-    dns: ["172.18.0.1"]
+    dns: 
+      - "172.18.0.1"  # Keep Docker bridge DNS
+      - "1.1.1.1"     # Add Cloudflare's DNS as backup
+      - "8.8.8.8"     # Add Google's DNS as additional backup
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}

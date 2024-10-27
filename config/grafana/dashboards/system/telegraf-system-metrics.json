@@ -105,7 +105,6 @@
       "title": "Root FS Used",
       "type": "gauge"
     }
-    // ... Rest of your panels with updated queries
   ],
   "templating": {
     "list": [
