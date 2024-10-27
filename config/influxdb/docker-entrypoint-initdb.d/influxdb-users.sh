@@ -44,6 +44,13 @@ PSRECORD_TOKEN=$(influx auth create \
     --token "${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}")
 echo "PSRECORD_TOKEN=${PSRECORD_TOKEN}"
 
+echo "Setting up V1 compatibility users..."
+echo "Creating telegraf user..."
+influx user create \
+    --name "${INFLUXDB_TELEGRAF_USER}" \
+    --password "${INFLUXDB_TELEGRAF_PASSWORD}" \
+    --token "${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}"
+
 # Create V1 compatibility API mappings for all buckets
 echo "Setting up V1 compatibility mappings..."
 for db in k6 telegraf psrecord cloudflare _internal; do

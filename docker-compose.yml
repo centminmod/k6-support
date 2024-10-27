@@ -96,13 +96,13 @@ services:
       - HOST_RUN=/hostfs/run
       - HOST_MOUNT_PREFIX=/hostfs
       - INFLUX_TOKEN=${INFLUX_TOKEN}
-      - TELEGRAF_INFLUXDB_USER=${TELEGRAF_INFLUXDB_USER}
-      - TELEGRAF_INFLUXDB_PASSWORD=${TELEGRAF_INFLUXDB_PASSWORD}
-      # InfluxDB v2 variables for cloudflare metrics
+      - INFLUXDB_DB_TELEGRAF=${INFLUXDB_DB_TELEGRAF}
+      # V1 API credentials
+      - INFLUXDB_TELEGRAF_USER=${INFLUXDB_TELEGRAF_USER}
+      - INFLUXDB_TELEGRAF_PASSWORD=${INFLUXDB_TELEGRAF_PASSWORD}
+      # V2 API credentials
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
       - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
-      # Database name
-      - INFLUXDB_DB_TELEGRAF=${INFLUXDB_DB_TELEGRAF}
     privileged: false
     volumes:
       - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
