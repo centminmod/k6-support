@@ -148,6 +148,21 @@ cp -a example.env .env
 DOCKER_GID=$(getent group docker | cut -d: -f3)
 echo "DOCKER_GROUP_ID=$DOCKER_GID" >> .env
 ```
+
+If you're using default provided `example.env` derived `.env`, also change the default value for password variables.
+
+```bash
+newpass=$(openssl rand -base64 21 | tr -dc 'a-zA-Z0-9')
+sed -i "s/=password/=${newpass}/g" .env
+```
+
+Same for InfluxDB token
+
+```bash
+newtoken=$(openssl rand -base64 21 | tr -dc 'a-zA-Z0-9')
+sed -i "s/=yoursupersecretadmintoken/=${newtoken}/g" .env
+```
+
 ```bash
 # Create .env file
 cat << EOF > .env
@@ -160,7 +175,7 @@ DOCKER_INFLUXDB_INIT_PASSWORD=password
 DOCKER_INFLUXDB_INIT_ORG=myorg
 DOCKER_INFLUXDB_INIT_BUCKET=k6
 DOCKER_INFLUXDB_INIT_RETENTION=1500d
-INFLUX_TOKEN=your-super-secret-admin-token
+INFLUX_TOKEN=yoursupersecretadmintoken
 
 # Telegraf
 TELEGRAF_INFLUXDB_USER=telegraf
@@ -171,11 +186,16 @@ GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=admin
 
 # Cloudflare Configuration
+CF_ACCOUNT_ID='your-cloudflare-account-id'
 CF_API_TOKEN=your-cloudflare-api-token
 CF_ZONES=zone1,zone2  # Comma-separated zone IDs, optional if you want all zones
+R2_ACCESS_KEY_ID=your_r2_access_key
+R2_SECRET_ACCESS_KEY=your_r2_secret_key
+R2_BUCKET_NAME='r2_bucketname'
+
 # Optional configurations
-CF_EXCLUDE_ZONES=  # Comma-separated zone IDs to exclude
-METRICS_DENYLIST=  # Comma-separated metrics to exclude
+#CF_EXCLUDE_ZONES=  # Comma-separated zone IDs to exclude
+#METRICS_DENYLIST=  # Comma-separated metrics to exclude
 
 # Legacy Compatibility
 INFLUXDB_TELEGRAF_USER=telegraf

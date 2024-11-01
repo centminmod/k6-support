@@ -107,3 +107,10 @@ datasources:
     isDefault: false
     editable: true
     version: 1
+
+  - name: Thanos
+    type: prometheus
+    access: proxy
+    url: http://thanos-query:19192
+    jsonData:
+      timeInterval: "30s"

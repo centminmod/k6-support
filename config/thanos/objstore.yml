@@ -1,0 +1,16 @@
+type: s3
+config:
+  bucket: ${R2_BUCKET_NAME}
+  endpoint: ${CF_ACCOUNT_ID}.r2.cloudflarestorage.com
+  access_key: ${R2_ACCESS_KEY_ID}
+  secret_key: ${R2_SECRET_ACCESS_KEY}
+  insecure: false
+  signature_version2: false
+  put_user_metadata: {}
+  http_config:
+    idle_conn_timeout: 90s
+    response_header_timeout: 2m
+    insecure_skip_verify: false
+  trace:
+    enable: true
+  part_size: 134217728

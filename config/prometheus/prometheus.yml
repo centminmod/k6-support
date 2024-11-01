@@ -4,6 +4,12 @@ global:
   scrape_timeout: 10s
   external_labels:
     monitor: "k6-support"
+    replica: 'prometheus-1'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
 
 # Rule files
 rule_files:
@@ -14,6 +20,12 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ["localhost:9090"]
+
+  - job_name: "grafana_metrics"
+    scrape_interval: 15s
+    scrape_timeout: 5s
+    static_configs:
+      - targets: ["grafana:3000"]
 
   - job_name: "node-exporter"
     scrape_interval: 10s
@@ -44,3 +56,22 @@ scrape_configs:
         target_label: instance
         regex: '(.*):(.*)'
         replacement: '${1}'
+
+  - job_name: "alertmanager"
+    static_configs:
+      - targets: ["alertmanager:9093"]
+
+  - job_name: 'cloudflared'
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    static_configs:
+      - targets: ['host.docker.internal:8083']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.*):(.*)'
+        replacement: '${1}'
+
+storage:
+  tsdb:
+    out_of_order_time_window: 0s

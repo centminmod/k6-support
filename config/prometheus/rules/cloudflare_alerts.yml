@@ -1,0 +1,100 @@
+# /config/prometheus/rules/alerts.yml
+groups:
+  - name: cloudflare_exporter_alerts
+    rules:
+      - alert: CloudflareExporterDown
+        expr: up{job="cloudflare"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Cloudflare Exporter is down"
+          description: "The Cloudflare exporter has been unreachable for more than 5 minutes."
+
+      - alert: CloudflareWorkerRequestsStale
+        expr: increase(cloudflare_worker_requests_count[5m]) == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Cloudflare Worker Requests are stale"
+          description: "The `cloudflare_worker_requests_count` metric has not increased in the last 5 minutes."
+
+      - alert: CloudflareCriticalMetricAbsent
+        expr: absent(cloudflare_zone_bandwidth_total)
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical Cloudflare Metric Absent"
+          description: "The `cloudflare_zone_bandwidth_total` metric is absent for more than 5 minutes."
+
+  - name: alertmanager_monitoring
+    rules:
+      - alert: AlertmanagerConfigurationReloadFailure
+        expr: alertmanager_config_last_reload_successful != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AlertManager configuration reload failure"
+          description: "AlertManager has failed to reload its configuration"
+
+      - alert: AlertmanagerClusterMemberDown
+        expr: up{job="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AlertManager service is down"
+          description: "AlertManager has been unreachable for more than 5m"
+
+  - name: prometheus_monitoring
+    rules:
+      - alert: PrometheusHighMemoryUsage
+        expr: |
+          (process_resident_memory_bytes{job="prometheus"} / container_spec_memory_limit_bytes{job="prometheus"}) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on Prometheus"
+          description: "Prometheus is using more than 80% of its memory limit for 5m"
+
+      - alert: PrometheusTargetMissing
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target missing (instance {{ $labels.instance }})"
+          description: "A Prometheus target has disappeared. An exporter might be crashed."
+
+      - alert: PrometheusConfigurationReloadFailure
+        expr: prometheus_config_last_reload_successful != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus configuration reload failure"
+          description: "Prometheus configuration reload error"
+
+  - name: node_monitoring
+    rules:
+      - alert: HostOutOfMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Host out of memory (instance {{ $labels.instance }})"
+          description: "Node memory is filling up (< 10% left)"
+
+      - alert: HostHighCpuLoad
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Host high CPU load (instance {{ $labels.instance }})"
+          description: "CPU load is > 80%"

@@ -1,0 +1,89 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: "${ALERTMANAGER_SMTP_SMARTHOST}"
+  smtp_from: "${ALERTMANAGER_SMTP_FROM}"
+  smtp_auth_username: "${ALERTMANAGER_SMTP_AUTH_USERNAME}"
+  smtp_auth_password: "${ALERTMANAGER_SMTP_AUTH_PASSWORD}"
+  smtp_require_tls: true
+  smtp_hello: "${ALERTMANAGER_SMTP_FROM}"  # Use the from address domain for HELO
+
+route:
+  group_by: ['alertname', 'job']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'email-critical'  # Default receiver
+  routes:
+    - match:
+        severity: critical
+      receiver: 'email-critical'
+      group_wait: 0s        # Send critical alerts immediately
+      repeat_interval: 1h   # Repeat critical alerts more frequently
+      continue: true        # Continue matching other rules
+
+    - match:
+        severity: warning
+      receiver: 'email-warning'
+      group_wait: 2m       # Give warnings time to group
+      repeat_interval: 8h  # Less frequent updates for warnings
+      continue: true
+
+inhibit_rules:
+  # Critical alerts inhibit related warning alerts
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal: ['alertname', 'job']
+
+  # CloudflareExporter specific inhibition rules
+  - source_match:
+      alertname: CloudflareExporterDown
+    target_match:
+      alertname: CloudflareWorkerRequestsStale
+    equal: ['job']
+
+  - source_match:
+      alertname: CloudflareExporterDown
+    target_match:
+      alertname: CloudflareCriticalMetricAbsent
+    equal: ['job']
+
+receivers:
+  - name: 'email-critical'
+    email_configs:
+      - to: "${ALERTMANAGER_EMAIL_CRITICAL_TO}"
+        send_resolved: true
+        headers:
+          subject: "[CRITICAL] {{ .GroupLabels.alertname }}"
+        html: |
+          {{ range .Alerts }}
+            <h3>{{ .Labels.alertname }}</h3>
+            <p><strong>{{ .Annotations.summary }}</strong></p>
+            <p>{{ .Annotations.description }}</p>
+            <ul>
+              {{ range .Labels.SortedPairs }}
+                <li><strong>{{ .Name }}:</strong> {{ .Value }}</li>
+              {{ end }}
+            </ul>
+            <p><strong>Active since:</strong> {{ .StartsAt }}</p>
+          {{ end }}
+
+  - name: 'email-warning'
+    email_configs:
+      - to: "${ALERTMANAGER_EMAIL_WARNING_TO}"
+        send_resolved: true
+        headers:
+          subject: "[WARNING] {{ .GroupLabels.alertname }}"
+        html: |
+          {{ range .Alerts }}
+            <h3>{{ .Labels.alertname }}</h3>
+            <p><strong>{{ .Annotations.summary }}</strong></p>
+            <p>{{ .Annotations.description }}</p>
+            <ul>
+              {{ range .Labels.SortedPairs }}
+                <li><strong>{{ .Name }}:</strong> {{ .Value }}</li>
+              {{ end }}
+            </ul>
+            <p><strong>Active since:</strong> {{ .StartsAt }}</p>
+          {{ end }}

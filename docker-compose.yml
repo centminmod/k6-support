@@ -11,14 +11,38 @@ networks:
 
 volumes:
   prometheus_data: {}
+  alertmanager_data: {}
   grafana_data: {}
   influxdb_data: {}
+  grafana_wal: {}
+  thanos_sidecar_data: {}
+  thanos_query_data: {}
+  thanos_compactor_data: {}
 
 services:
   prometheus:
     image: prom/prometheus:latest
     container_name: k6-support-prometheus
     hostname: prometheus
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     dns: 
       - "172.18.0.1"  # Keep Docker bridge DNS
       - "1.1.1.1"     # Add Cloudflare's DNS as backup
@@ -27,14 +51,29 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=190d'
+      - '--storage.tsdb.max-block-duration=2h'
+      - '--storage.tsdb.min-block-duration=2h'
+      - '--storage.tsdb.head-chunks-write-queue-size=4096'
+      - '--storage.tsdb.max-block-chunk-segment-size=512MB'
+      - '--storage.tsdb.samples-per-chunk=240'
+      - '--storage.tsdb.wal-segment-size=128MB'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.read-timeout=2m'
       - '--web.enable-lifecycle'
+      - '--auto-gomemlimit.ratio=0.8'
+      - '--query.lookback-delta=2m'
+      - '--query.max-concurrency=30'
+      - '--query.max-samples=100000000'
+      - '--query.timeout=3m'
       - '--log.level=debug'
+      - '--log.format=json'
     ports:
       - "9199:9090"
     volumes:
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/prometheus/rules:/etc/prometheus/rules:ro
       - prometheus_data:/prometheus
     networks:
       k6-support:
@@ -46,6 +85,275 @@ services:
       timeout: 5s
       retries: 3
       start_period: 60s
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: k6-support-alertmanager
+    hostname: alertmanager
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    restart: unless-stopped
+    environment:
+      - ALERTMANAGER_SMTP_SMARTHOST=${ALERTMANAGER_SMTP_SMARTHOST}
+      - ALERTMANAGER_SMTP_FROM=${ALERTMANAGER_SMTP_FROM}
+      - ALERTMANAGER_SMTP_AUTH_USERNAME=${ALERTMANAGER_SMTP_AUTH_USERNAME}
+      - ALERTMANAGER_SMTP_AUTH_PASSWORD=${ALERTMANAGER_SMTP_AUTH_PASSWORD}
+      - ALERTMANAGER_EMAIL_TO=${ALERTMANAGER_EMAIL_TO}
+      - ALERTMANAGER_EMAIL_CRITICAL_TO=${ALERTMANAGER_EMAIL_CRITICAL_TO}
+      - ALERTMANAGER_EMAIL_WARNING_TO=${ALERTMANAGER_EMAIL_WARNING_TO}
+    volumes:
+      - alertmanager_data:/alertmanager:rw
+      - ./config/alertmanager/config_template.yml:/etc/alertmanager/config_template.yml:ro
+      - ./config/alertmanager/init-alertmanager.sh:/init-alertmanager.sh:ro
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.2'
+    ports:
+      - "9093:9093"
+    networks:
+      k6-support:
+        aliases:
+          - alertmanager
+    entrypoint: ["/bin/sh", "/init-alertmanager.sh"]
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+      - '--log.level=info'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # https://thanos.io/tip/thanos/quick-tutorial.md/#sidecar
+  thanos-sidecar:
+    image: quay.io/thanos/thanos:v0.36.1
+    container_name: k6-support-thanos-sidecar
+    hostname: thanos-sidecar
+    user: "root"
+    restart: unless-stopped
+    environment:
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+    entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
+    command:
+      - 'sidecar'
+      - '--tsdb.path=/prometheus'
+      - '--prometheus.url=http://prometheus:9090'
+      - '--http-address=0.0.0.0:19191'
+      - '--grpc-address=0.0.0.0:19090'
+      - '--log.level=debug'
+      - '--shipper.upload-compacted'
+    dns: 
+      - "172.18.0.1"
+      - "1.1.1.1"
+      - "8.8.8.8"
+    volumes:
+      - prometheus_data:/prometheus
+      - thanos_sidecar_data:/data
+      - ./config/thanos/objstore.yml:/etc/thanos/objstore.yml:ro
+      - ./config/thanos/scripts/init-thanos.sh:/etc/thanos/init-thanos.sh:ro
+    networks:
+      k6-support:
+        aliases:
+          - thanos-sidecar
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:19191/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # https://thanos.io/tip/thanos/quick-tutorial.md/#querierquery
+  thanos-query:
+    image: quay.io/thanos/thanos:v0.36.1
+    container_name: k6-support-thanos-query
+    hostname: thanos-query
+    user: "root"
+    restart: unless-stopped
+    environment:
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+    entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
+    command:
+      - 'query'
+      - '--http-address=0.0.0.0:19192'
+      - '--grpc-address=0.0.0.0:19093'
+      - '--store=thanos-sidecar:19090'
+      - '--store=thanos-store-gateway:19091'
+      - '--query.max-concurrent=20'
+      - '--query.timeout=5m'
+      - '--store.response-timeout=2m'
+      - '--log.level=debug'
+    dns: 
+      - "172.18.0.1"
+      - "1.1.1.1"
+      - "8.8.8.8"
+    volumes:
+      - ./config/thanos/objstore.yml:/etc/thanos/objstore.yml:ro
+      - ./config/thanos/scripts/init-thanos.sh:/etc/thanos/init-thanos.sh:ro
+      - thanos_query_data:/data
+    ports:
+      - "19192:19192"
+    networks:
+      k6-support:
+        aliases:
+          - thanos-query
+    depends_on:
+      thanos-sidecar:
+        condition: service_healthy
+      thanos-store-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:19192/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # https://thanos.io/tip/thanos/quick-tutorial.md/#store-gateway
+  thanos-store-gateway:
+    image: quay.io/thanos/thanos:v0.36.1
+    container_name: k6-support-thanos-store-gateway
+    hostname: thanos-store-gateway
+    user: "root"
+    restart: unless-stopped
+    environment:
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+    entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
+    command:
+      - 'store'
+      - '--http-address=0.0.0.0:19193'
+      - '--grpc-address=0.0.0.0:19091'
+      - '--index-cache-size=2048MB'
+      - '--chunk-pool-size=3072MB'
+      - '--store.grpc.series-max-concurrency=30'
+      - '--log.level=debug'
+      - '--data-dir=/data'
+    dns: 
+      - "172.18.0.1"
+      - "1.1.1.1"
+      - "8.8.8.8"
+    volumes:
+      - ./config/thanos/objstore.yml:/etc/thanos/objstore.yml:ro
+      - ./config/thanos/scripts/init-thanos.sh:/etc/thanos/init-thanos.sh:ro
+    tmpfs:
+      - /data:rw,nosuid,nodev,size=4g,uid=1001,gid=1001
+    networks:
+      k6-support:
+        aliases:
+          - thanos-store-gateway
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:19193/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # https://thanos.io/tip/thanos/quick-tutorial.md/#compactor
+  # https://thanos.io/tip/components/compact.md/#downsampling
+  thanos-compactor:
+    image: quay.io/thanos/thanos:v0.36.1
+    container_name: k6-support-thanos-compactor
+    hostname: thanos-compactor
+    user: "root"
+    restart: unless-stopped
+    environment:
+      - R2_BUCKET_NAME=${R2_BUCKET_NAME}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+    entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
+    command:
+      - 'compact'
+      - '--http-address=0.0.0.0:19194'
+      - '--wait'                                # daemon mode
+      - '--consistency-delay=30m'
+      - '--retention.resolution-raw=190d'       # Raw data retention
+      - '--retention.resolution-5m=365d'        # 5-minute downsampled data retention
+      - '--retention.resolution-1h=1500d'       # 1-hour downsampled data retention
+      - '--delete-delay=72h'                    # Delay before deleting marked blocks
+      - '--compact.concurrency=1'               # Number of goroutines to use
+      - '--downsample.concurrency=1'            # downsample concurrency
+      - '--deduplication.replica-label=replica' # Label to distinguish replica blocks
+      - '--log.level=debug'
+      - '--data-dir=/data'
+    dns: 
+      - "172.18.0.1"
+      - "1.1.1.1"
+      - "8.8.8.8"
+    volumes:
+      - ./config/thanos/objstore.yml:/etc/thanos/objstore.yml:ro
+      - ./config/thanos/scripts/init-thanos.sh:/etc/thanos/init-thanos.sh:ro
+      - thanos_compactor_data:/data
+    networks:
+      k6-support:
+        aliases:
+          - thanos-compactor
+    depends_on:
+      thanos-store-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:19194/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   influxdb:
       image: influxdb:2.7
@@ -79,6 +387,14 @@ services:
         - INFLUXDB_DB_TELEGRAF
         - INFLUXDB_DB_PSRECORD
         - INFLUX_TOKEN
+      deploy:
+        resources:
+          limits:      # Maximum resources the container can use
+            memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+            cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          reservations:    # Minimum guaranteed resources
+            memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+            cpus: '0.5'    # Container is guaranteed at least half a CPU core
       volumes:
         - influxdb_data:/var/lib/influxdb2
         - ./config/influxdb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
@@ -119,6 +435,14 @@ services:
       # V2 API credentials
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
       - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
     privileged: false
     volumes:
       - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
@@ -148,19 +472,89 @@ services:
       start_period: 30s
 
   grafana:
-    image: grafana/grafana-oss:10.2.0
+    image: grafana/grafana-oss:11.3.0
     container_name: k6-support-grafana
     hostname: grafana
+    user: "472:472"
     dns: 
       - "172.18.0.1"  # Keep Docker bridge DNS
       - "1.1.1.1"     # Add Cloudflare's DNS as backup
       - "8.8.8.8"     # Add Google's DNS as additional backup
     restart: unless-stopped
     environment:
+      # Grafana metrics
+      - GF_METRICS_ENABLED=true
+      - GF_METRICS_ENDPOINT=/metrics
+      # Core Database Settings
+      - GF_DATABASE_WAL=true                    # Enable Write-Ahead Logging for better performance and crash recovery
+      - GF_DATABASE_CACHE_MODE=shared           # Use shared cache mode to improve concurrent access
+      - GF_DATABASE_BUSY_TIMEOUT=30000          # Wait up to 30 seconds when database is locked
+      - GF_DATABASE_MAX_CONNECTIONS=200         # Maximum number of concurrent database connections
+      - GF_DATABASE_SQLITE_SYNCHRONOUS=2        # Level 2 (NORMAL) synchronization - balance between safety and speed
+      - GF_DATABASE_QUERY_TIMEOUT=30s           # Maximum time a query can run before timeout
+
+      # Detailed SQLite Optimizations
+      - GF_DATABASE_SQLITE_PRAGMAS=journal_mode=wal,synchronous=normal,cache_size=2000,foreign_keys=1,busy_timeout=15000,temp_store=memory
+                                                # Combined SQLite optimizations:
+                                                # - journal_mode=wal: Use Write-Ahead Logging
+                                                # - synchronous=normal: Balance between safety and speed
+                                                # - cache_size=2000: Increase cache size for better performance
+                                                # - foreign_keys=1: Enable foreign key constraints
+                                                # - busy_timeout=15000: Wait 15s when db is locked
+                                                # - temp_store=memory: Store temporary tables in memory
+      - GF_DATABASE_SQLITE_JOURNAL_MODE=wal     # Explicitly set WAL journaling mode
+      - GF_DATABASE_SQLITE_SYNC=normal          # Normal synchronization mode (same as synchronous=normal)
+      - GF_DATABASE_CONN_MAX_LIFETIME=7200     # Maximum lifetime of a connection in seconds (2 hours)
+      - GF_DATABASE_LOG_QUERIES=false            # Log all database queries for debugging
+      
+      # Connection Pool Settings
+      - GF_DATABASE_MAX_IDLE_CONN=20           # Maximum number of idle connections in the pool
+      - GF_DATABASE_MAX_OPEN_CONN=30           # Maximum number of open connections to database
+      - GF_DATABASE_POOL_SIZE=30               # Size of the connection pool
+      - GF_DATABASE_LOG_SLOW_QUERIES=true      # Log queries that take longer than threshold
+      - GF_DATABASE_SLOW_QUERY_THRESHOLD=2s    # Define slow query as taking longer than 2 seconds
+      
+      # Dashboard Cache Settings
+      - GF_DASHBOARD_CACHE_ENABLED=true        # Enable dashboard caching
+      - GF_DASHBOARD_CACHE_TTL=120              # Cache dashboards for 120 seconds
+      - GF_RENDER_CONCURRENT_RENDER_LIMIT=5    # Limit concurrent dashboard renderings to 5
+      
+      # Session Management
+      - GF_SESSION_PROVIDER=memory             # Store sessions in memory instead of database
+      - GF_SESSION_PROVIDER_CONFIG=sessions    # Session provider configuration path
+      - GF_AUTH_TOKEN_ROTATION_INTERVAL_MINUTES=240  # Rotate auth tokens every 240 minutes
+      - GF_ANALYTICS_REPORTING_ENABLED=false   # Disable usage reporting to Grafana
+      
+      # General Performance Settings
+      - GF_PATHS_TEMP_DATA_LIFETIME=48h       # Keep temporary data for 48 hours
+      - GF_SERVER_READ_TIMEOUT=60s            # HTTP read timeout
+      - GF_SERVER_WRITE_TIMEOUT=60s           # HTTP write timeout
+      - GF_DASHBOARDS_VERSIONS_TO_KEEP=30     # Keep last 20 versions of dashboards
+      - GF_ALERTING_MAX_ANNOTATIONS_TO_KEEP=10000  # Maximum number of alert annotations to keep
+      
+      # Data Source Query Settings
+      - GF_DATAPROXY_TIMEOUT=30               # Timeout for datasource queries in seconds
+      - GF_DATAPROXY_LOGGING=false             # Log datasource proxy requests for debugging
+      - GF_UNIFIED_ALERTING_MAX_RULES_PER_DASHBOARD=50  # Limit alert rules per dashboard
+
+      # Add log level control
+      - GF_LOG_LEVEL=info                   # Options: debug, info, warn, error
+      - GF_LOG_MODE=console                 # Options: console, file
+      - GF_LOG_FILTERS=alerting.notifier:info alerting.evaluation:info ngalert:info
+
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
     ports:
       - "9409:3000"
     volumes:
@@ -171,10 +565,20 @@ services:
       - ./config/grafana/dashboards/cloudflare:/var/lib/grafana/dashboards/cloudflare:ro
       - ./config/grafana/dashboards/cloudflare-custom:/var/lib/grafana/dashboards/cloudflare-custom:ro
       - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
-      - grafana_data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana:rw
+      - grafana_wal:/var/lib/grafana/wal:rw
       - ./config/grafana/provisioning/plugins:/etc/grafana/provisioning/plugins:ro
       - ./config/grafana/provisioning/notifiers:/etc/grafana/provisioning/notifiers:ro
       - ./config/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        tag: "{{.Name}}/{{.ID}}"
+        # Add these to filter logs
+        labels: "production"
+        env: "prod"
     networks:
       k6-support:
         aliases:
@@ -206,6 +610,14 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
       - /run/udev:/run/udev:ro
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
     networks:
       k6-support:
           aliases:
@@ -229,9 +641,20 @@ services:
       - LISTEN=:8080
       - METRICS_PATH=/metrics
       - CF_BATCH_SIZE=10
+      - RETRY_INTERVAL=30
+      - MAX_RETRIES=3
+      - TIMEOUT=10
       - FREE_TIER=false
       - CF_EXCLUDE_ZONES=${CF_EXCLUDE_ZONES:-}
       - METRICS_DENYLIST=${METRICS_DENYLIST:-}
+    deploy:
+      resources:
+        limits:      # Maximum resources the container can use
+          memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
+          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+        reservations:    # Minimum guaranteed resources
+          memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
+          cpus: '0.5'    # Container is guaranteed at least half a CPU core
     ports:
       - "9198:8080"
     networks:
@@ -240,7 +663,7 @@ services:
             - cloudflare-exporter
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/metrics"]
-      interval: 10s
-      timeout: 5s
+      interval: 30s
+      timeout: 10s
       retries: 3
       start_period: 30s
