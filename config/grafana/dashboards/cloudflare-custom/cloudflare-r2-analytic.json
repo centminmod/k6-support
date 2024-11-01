@@ -390,7 +390,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "pluginVersion": "11.3.0",
@@ -400,12 +400,16 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "editorMode": "code",
-          "expr": "sum(cloudflare_r2_storage_bytes) by (bucket)",
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(bucket) (cloudflare_r2_storage_bytes) > 0",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "useBackend": false
         }
       ],
       "title": "R2 Storage by Bucket",
@@ -643,7 +647,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -704,53 +709,7 @@
     "cloudflare"
   ],
   "templating": {
-    "list": [
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "definition": "label_values(cloudflare_r2_storage_bytes,account)",
-        "description": "Cloudflare Account",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Cloudflare Account",
-        "name": "account",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(cloudflare_r2_storage_bytes,account)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "definition": "label_values(cloudflare_r2_operation_count,bucket)",
-        "includeAll": true,
-        "label": "Cloudflare R2 Bucket",
-        "multi": true,
-        "name": "bucket",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(cloudflare_r2_operation_count,bucket)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-24h",
@@ -760,6 +719,6 @@
   "timezone": "browser",
   "title": "Cloudflare R2 Analytics",
   "uid": "f9292e93-a28c-41ea-9052-ad69872b7688",
-  "version": 4,
+  "version": 12,
   "weekStart": ""
 }
