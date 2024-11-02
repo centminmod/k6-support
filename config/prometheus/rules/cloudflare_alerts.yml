@@ -124,7 +124,7 @@ groups:
           category: availability
         annotations:
           summary: "[{{ $labels.monitor }}] Multiple Targets Down"
-          description: "{{ $value }} scrape targets are down. Affected targets: {{ range query 'up == 0' }}{{ .Labels.job }}, {{ end }}"
+          description: "Multiple targets are down: {{ range $labels.job }}{{ . }}, {{ end }}"
 
       - alert: "Prometheus Alert Scrape_Duration_High"
         expr: rate(scrape_duration_seconds[5m]) > 0.5
