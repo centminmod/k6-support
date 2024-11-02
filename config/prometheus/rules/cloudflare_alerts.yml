@@ -98,3 +98,62 @@ groups:
         annotations:
           summary: "Host high CPU load (instance {{ $labels.instance }})"
           description: "CPU load is > 80%"
+
+  - name: PrometheusServiceDiscovery  # More specific group name
+    rules:
+      - alert: SDDNSLookupFailures      # Shortened, still clear name
+        expr: increase(prometheus_sd_dns_lookup_failures_total[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          category: service_discovery    # Added categorization
+        annotations:
+          summary: "Service Discovery DNS lookup failures"
+          description: "{{ $value }} DNS lookup failures in last 5m"
+          runbook_url: "https://your-wiki/runbooks/sd-troubleshooting"  # Optional but recommended
+
+  - name: PrometheusScrapeHealth      # Separate group for scrape-related alerts
+    rules:
+      - alert: MultipleTargetsDown
+        expr: count(up == 0) > 1
+        for: 5m
+        labels:
+          severity: critical
+          category: availability
+        annotations:
+          summary: "Multiple targets unreachable"
+          description: "{{ $value }} scrape targets are down. Affected targets: {{ range query 'up == 0' }}{{ .Labels.job }}, {{ end }}"
+
+      - alert: ScrapeDurationHigh
+        expr: rate(scrape_duration_seconds[5m]) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High scrape latency"
+          description: "Job {{ $labels.job }} scrape duration is {{ $value }}s"
+
+  - name: PrometheusCardinality      # Separate group for cardinality alerts
+    rules:
+      - alert: HighSeriesCreationRate
+        expr: rate(scrape_series_added[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          category: cardinality
+        annotations:
+          summary: "High rate of new series creation"
+          description: "Job {{ $labels.job }} is creating {{ $value }} series/s"
+          dashboard_url: "${GRAFANA_URL}/d/prometheus-cardinality"
+
+      - alert: CardinalityExplosion
+        expr: changes(scrape_series_added[1h]) > 1000
+        for: 5m
+        labels:
+          severity: critical
+          category: cardinality
+        annotations:
+          summary: "Cardinality explosion detected"
+          description: "Job {{ $labels.job }} has abnormal series growth"
+          runbook_url: "https://your-wiki/runbooks/cardinality-explosion"
