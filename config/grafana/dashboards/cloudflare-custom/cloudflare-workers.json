@@ -576,9 +576,11 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum(cloudflare_prometheus_cloudflare_worker_requests_count)",
+          "exemplar": false,
+          "expr": "sum by(account) (cloudflare_prometheus_cloudflare_worker_requests_count)",
+          "format": "time_series",
           "fullMetaSearch": false,
-          "includeNullMetadata": true,
+          "includeNullMetadata": false,
           "instant": false,
           "legendFormat": "Worker Requests",
           "range": true,
@@ -598,7 +600,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-reds"
+            "fixedColor": "dark-red",
+            "mode": "fixed"
           },
           "custom": {
             "axisBorderShow": false,
@@ -678,7 +681,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum(cloudflare_prometheus_cloudflare_worker_errors_count)",
+          "expr": "sum by(account) (cloudflare_prometheus_cloudflare_worker_errors_count)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1185,8 +1188,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1322,8 +1324,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1395,6 +1396,6 @@
   "timezone": "",
   "title": "Cloudflare Workers v1",
   "uid": "f8b0db50-bc71-4c17-9b46-0d111fd7ccb2",
-  "version": 36,
+  "version": 38,
   "weekStart": ""
 }
