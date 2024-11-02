@@ -1,159 +1,159 @@
-# /config/prometheus/rules/alerts.yml
 groups:
   - name: cloudflare_exporter_alerts
     rules:
-      - alert: CloudflareExporterDown
+      - alert: "Prometheus Alert CF_Exporter_Down"
         expr: up{job="cloudflare"} == 0
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "Cloudflare Exporter is down"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Cloudflare Exporter Down"
           description: "The Cloudflare exporter has been unreachable for more than 5 minutes."
 
-      - alert: CloudflareWorkerRequestsStale
-        expr: increase(cloudflare_worker_requests_count[5m]) == 0
-        for: 5m
+      - alert: "Prometheus Alert CF_Worker_Requests_Stale"
+        expr: |
+          increase(cloudflare_worker_requests_count[5m]) == 0
+          and on(script_name)
+          sum by(script_name) (rate(cloudflare_worker_requests_count[24h])) > 0.1
+        for: 10m
         labels:
           severity: warning
+          category: availability
         annotations:
-          summary: "Cloudflare Worker Requests are stale"
-          description: "The `cloudflare_worker_requests_count` metric has not increased in the last 5 minutes."
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Worker {{ $labels.script_name }} Stale"
+          description: "Worker {{ $labels.script_name }} (avg {{ $value | printf \"%.2f\" }} req/s) has no requests in last 5m"
 
-      - alert: CloudflareCriticalMetricAbsent
+      - alert: "Prometheus Alert CF_Critical_Metric_Absent"
         expr: absent(cloudflare_zone_bandwidth_total)
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "Critical Cloudflare Metric Absent"
-          description: "The `cloudflare_zone_bandwidth_total` metric is absent for more than 5 minutes."
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Critical Metric Absent"
+          description: "The cloudflare_zone_bandwidth_total metric is absent for more than 5 minutes"
 
   - name: alertmanager_monitoring
     rules:
-      - alert: AlertmanagerConfigurationReloadFailure
+      - alert: "Prometheus Alert AlertManager_Config_Reload_Failure"
         expr: alertmanager_config_last_reload_successful != 1
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "AlertManager configuration reload failure"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] AlertManager Config Reload Failed"
           description: "AlertManager has failed to reload its configuration"
 
-      - alert: AlertmanagerClusterMemberDown
+      - alert: "Prometheus Alert AlertManager_Down"
         expr: up{job="alertmanager"} == 0
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "AlertManager service is down"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] AlertManager Down"
           description: "AlertManager has been unreachable for more than 5m"
 
   - name: prometheus_monitoring
     rules:
-      - alert: PrometheusHighMemoryUsage
+      - alert: "Prometheus Alert Prom_High_Memory"
         expr: |
           (process_resident_memory_bytes{job="prometheus"} / container_spec_memory_limit_bytes{job="prometheus"}) > 0.8
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "High memory usage on Prometheus"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] High Memory Usage"
           description: "Prometheus is using more than 80% of its memory limit for 5m"
 
-      - alert: PrometheusTargetMissing
+      - alert: "Prometheus Alert Prom_Target_Missing"
         expr: up == 0
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "Prometheus target missing (instance {{ $labels.instance }})"
-          description: "A Prometheus target has disappeared. An exporter might be crashed."
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Target Missing"
+          description: "Instance {{ $labels.instance }} ({{ $labels.job }}) is unreachable"
 
-      - alert: PrometheusConfigurationReloadFailure
+      - alert: "Prometheus Alert Prom_Config_Reload_Failure"
         expr: prometheus_config_last_reload_successful != 1
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "Prometheus configuration reload failure"
-          description: "Prometheus configuration reload error"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Config Reload Failed"
+          description: "Prometheus configuration reload has failed"
 
   - name: node_monitoring
     rules:
-      - alert: HostOutOfMemory
+      - alert: "Prometheus Alert Host_Low_Memory"
         expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "Host out of memory (instance {{ $labels.instance }})"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Low Memory"
           description: "Node memory is filling up (< 10% left)"
 
-      - alert: HostHighCpuLoad
+      - alert: "Prometheus Alert Host_High_CPU"
         expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "Host high CPU load (instance {{ $labels.instance }})"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] High CPU Load"
           description: "CPU load is > 80%"
 
-  - name: PrometheusServiceDiscovery  # More specific group name
+  - name: prometheus_service_discovery
     rules:
-      - alert: SDDNSLookupFailures      # Shortened, still clear name
+      - alert: "Prometheus Alert SD_DNS_Lookup_Failures"
         expr: increase(prometheus_sd_dns_lookup_failures_total[5m]) > 0
         for: 2m
         labels:
           severity: warning
-          category: service_discovery    # Added categorization
+          category: service_discovery
         annotations:
-          summary: "Service Discovery DNS lookup failures"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] DNS Lookup Failures"
           description: "{{ $value }} DNS lookup failures in last 5m"
-          runbook_url: "https://your-wiki/runbooks/sd-troubleshooting"  # Optional but recommended
 
-  - name: PrometheusScrapeHealth      # Separate group for scrape-related alerts
+  - name: prometheus_scrape_health
     rules:
-      - alert: MultipleTargetsDown
+      - alert: "Prometheus Alert Multiple_Targets_Down"
         expr: count(up == 0) > 1
         for: 5m
         labels:
           severity: critical
           category: availability
         annotations:
-          summary: "Multiple targets unreachable"
+          summary: "[{{ $labels.monitor }}] Multiple Targets Down"
           description: "{{ $value }} scrape targets are down. Affected targets: {{ range query 'up == 0' }}{{ .Labels.job }}, {{ end }}"
 
-      - alert: ScrapeDurationHigh
+      - alert: "Prometheus Alert Scrape_Duration_High"
         expr: rate(scrape_duration_seconds[5m]) > 0.5
         for: 5m
         labels:
           severity: warning
           category: performance
         annotations:
-          summary: "High scrape latency"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] High Scrape Latency"
           description: "Job {{ $labels.job }} scrape duration is {{ $value }}s"
 
-  - name: PrometheusCardinality      # Separate group for cardinality alerts
+  - name: prometheus_cardinality
     rules:
-      - alert: HighSeriesCreationRate
+      - alert: "Prometheus Alert High_Series_Creation"
         expr: rate(scrape_series_added[5m]) > 100
         for: 5m
         labels:
           severity: warning
           category: cardinality
         annotations:
-          summary: "High rate of new series creation"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] High Series Creation Rate"
           description: "Job {{ $labels.job }} is creating {{ $value }} series/s"
-          dashboard_url: "${GRAFANA_URL}/d/prometheus-cardinality"
 
-      - alert: CardinalityExplosion
+      - alert: "Prometheus Alert Cardinality_Explosion"
         expr: changes(scrape_series_added[1h]) > 1000
         for: 5m
         labels:
           severity: critical
           category: cardinality
         annotations:
-          summary: "Cardinality explosion detected"
+          summary: "[{{ $labels.monitor }}/{{ $labels.instance }}] Cardinality Explosion"
           description: "Job {{ $labels.job }} has abnormal series growth"
-          runbook_url: "https://your-wiki/runbooks/cardinality-explosion"
