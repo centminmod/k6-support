@@ -33,6 +33,9 @@ scrape_configs:
     static_configs:
       - targets: ["node-exporter:9100"]
 
+  # disable direct scraping of cloudflare-exporter
+  # allow telegraf to scrape cloudflare-exporter instead
+  # passing on metrics to prometheus via telegraf
   - job_name: 'cloudflare'
     metrics_path: '/metrics'
     scrape_interval: 5m
