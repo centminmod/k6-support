@@ -37,10 +37,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     extra_hosts:
       - "host.docker.internal:host-gateway"
     dns: 
@@ -111,7 +111,7 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.5'
+          cpus: '1'
         reservations:
           memory: 128M
           cpus: '0.2'
@@ -154,10 +154,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
     command:
       - 'sidecar'
@@ -206,10 +206,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
     command:
       - 'query'
@@ -263,10 +263,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
     command:
       - 'store'
@@ -314,10 +314,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     entrypoint: ["/bin/sh", "/etc/thanos/init-thanos.sh"]
     command:
       - 'compact'
@@ -391,10 +391,10 @@ services:
         resources:
           limits:      # Maximum resources the container can use
             memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-            cpus: '1'  # Container will not be able to use more than 1 full CPU core
+            cpus: '2'  # Container will not be able to use more than 1 full CPU core
           reservations:    # Minimum guaranteed resources
             memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-            cpus: '0.5'    # Container is guaranteed at least half a CPU core
+            cpus: '1'    # Container is guaranteed at least half a CPU core
       volumes:
         - influxdb_data:/var/lib/influxdb2
         - ./config/influxdb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
@@ -439,10 +439,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     privileged: false
     volumes:
       - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
@@ -551,10 +551,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     ports:
       - "9409:3000"
     volumes:
@@ -614,10 +614,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     networks:
       k6-support:
           aliases:
@@ -651,10 +651,10 @@ services:
       resources:
         limits:      # Maximum resources the container can use
           memory: 2G # Container will not be able to use more than 2 gigabytes of RAM
-          cpus: '1'  # Container will not be able to use more than 1 full CPU core
+          cpus: '2'  # Container will not be able to use more than 1 full CPU core
         reservations:    # Minimum guaranteed resources
           memory: 1G     # Container is guaranteed at least 1 gigabyte of RAM
-          cpus: '0.5'    # Container is guaranteed at least half a CPU core
+          cpus: '1'    # Container is guaranteed at least half a CPU core
     ports:
       - "9198:8080"
     networks:
