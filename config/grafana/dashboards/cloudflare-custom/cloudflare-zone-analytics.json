@@ -502,11 +502,17 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
+          "disableTextWrap": false,
+          "editorMode": "builder",
           "expr": "rate(cloudflare_zone_uniques_total{zone=~\"$zone\"}[$__interval])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "interval": "",
           "intervalFactor": 10,
           "legendFormat": "visitors",
-          "refId": "A"
+          "range": true,
+          "refId": "A",
+          "useBackend": false
         }
       ],
       "title": "Unique Visitors",
@@ -838,22 +844,34 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
+          "disableTextWrap": false,
+          "editorMode": "builder",
           "expr": "rate(cloudflare_zone_requests_total{zone=~\"$zone\"}[$__interval])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "interval": "",
           "intervalFactor": 10,
           "legendFormat": "total",
-          "refId": "A"
+          "range": true,
+          "refId": "A",
+          "useBackend": false
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
+          "disableTextWrap": false,
+          "editorMode": "builder",
           "expr": "rate(cloudflare_zone_requests_cached{zone=~\"$zone\"}[$__interval])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "interval": "",
           "intervalFactor": 10,
           "legendFormat": "cached",
-          "refId": "B"
+          "range": true,
+          "refId": "B",
+          "useBackend": false
         }
       ],
       "title": "Requests / second",
@@ -952,6 +970,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
+          "editorMode": "builder",
           "expr": "rate(cloudflare_zone_requests_country{zone=~\"$zone\"}[$__interval]) > 0",
           "instant": false,
           "interval": "",
@@ -1498,6 +1517,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
+          "editorMode": "builder",
           "expr": "increase(cloudflare_zone_requests_country{zone=~\"$zone\"}[$__range])",
           "instant": true,
           "interval": "",
@@ -2100,7 +2120,7 @@
     }
   ],
   "preload": false,
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 40,
   "tags": [],
   "templating": {
@@ -2153,6 +2173,6 @@
   "timezone": "",
   "title": "CloudFlare Zone Analytics v2",
   "uid": "mWxtnz5My",
-  "version": 3,
+  "version": 8,
   "weekStart": ""
 }

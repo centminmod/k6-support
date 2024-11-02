@@ -18,11 +18,9 @@
   "description": "Last 12 hours - Updates every 5 minutes",
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": 22131,
   "graphTooltip": 0,
-  "id": 11,
+  "id": 10,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {},
@@ -60,6 +58,12 @@
       "interval": "5m",
       "options": {
         "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
         "maxVizHeight": 300,
         "minVizHeight": 15,
         "minVizWidth": 8,
@@ -76,7 +80,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -441,21 +445,21 @@
         "x": 12,
         "y": 0
       },
-      "id": 96,
+      "id": 107,
       "options": {
         "legend": {
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
           "values": [
-            "percent",
-            "value"
+            "value",
+            "percent"
           ]
         },
         "pieType": "pie",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -465,6 +469,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -474,12 +479,12 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "cloudflare_zone_requests_country",
+          "expr": "sum by(country, region) (increase(cloudflare_prometheus_cloudflare_zone_requests_country[$__rate_interval]))",
           "format": "heatmap",
           "fullMetaSearch": false,
-          "includeNullMetadata": true,
+          "includeNullMetadata": false,
           "instant": false,
-          "legendFormat": "{{country}}",
+          "legendFormat": "{{country}}-{{region}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -507,6 +512,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -568,6 +574,7 @@
           "sort": "desc"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -576,7 +583,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk(25, sum by(host) (cloudflare_prometheus_cloudflare_zone_firewall_events_count))",
+          "expr": "topk(25, sum by(host) (increase(cloudflare_prometheus_cloudflare_zone_firewall_events_count[$__rate_interval]))) >= 1",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -587,7 +594,6 @@
         }
       ],
       "title": "WAF Events By Hostname",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -609,6 +615,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -670,6 +677,7 @@
           "sort": "desc"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -678,7 +686,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk by(country, action) (25, rate(cloudflare_prometheus_cloudflare_zone_firewall_events_count{action!=\"log\"}[$__rate_interval]))",
+          "expr": "topk by(country, action) (25, increase(cloudflare_prometheus_cloudflare_zone_firewall_events_count{action!=\"log\"}[$__rate_interval])) >= 1",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -689,7 +697,6 @@
         }
       ],
       "title": "WAF Actions By Country (exclude LOG action)",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -711,6 +718,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 25,
             "gradientMode": "none",
@@ -779,7 +787,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -788,7 +796,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk(20, sum by(country) (rate(cloudflare_prometheus_cloudflare_zone_firewall_events_count[$__rate_interval])))",
+          "expr": "topk(20, sum by(country) (increase(cloudflare_prometheus_cloudflare_zone_firewall_events_count[$__rate_interval]))) >= 1",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -799,7 +807,6 @@
         }
       ],
       "title": "WAF Events By Country",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -821,6 +828,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -882,6 +890,7 @@
           "sort": "desc"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -890,7 +899,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk(25, sum by(colocation) (rate(cloudflare_prometheus_cloudflare_zone_colocation_requests_total[$__rate_interval])))",
+          "expr": "topk(25, sum by(colocation) (increase(cloudflare_prometheus_cloudflare_zone_colocation_requests_total[$__rate_interval]))) >= 1",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -901,7 +910,6 @@
         }
       ],
       "title": "HTTP Traffic By Edge Colo",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -923,6 +931,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 25,
             "gradientMode": "none",
@@ -991,7 +1000,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -1011,7 +1020,6 @@
         }
       ],
       "title": "WAF Events By Action",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -1033,6 +1041,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 25,
             "gradientMode": "none",
@@ -1101,7 +1110,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -1110,7 +1119,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "topk(20, rate(cloudflare_prometheus_cloudflare_zone_requests_status[$__rate_interval]))",
+          "expr": "topk(20, increase(cloudflare_prometheus_cloudflare_zone_requests_status[$__rate_interval])) >= 1",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1121,7 +1130,6 @@
         }
       ],
       "title": "HTTP Requests By Status",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -1143,6 +1151,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1204,6 +1213,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -1212,7 +1222,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(source) (rate(cloudflare_prometheus_cloudflare_zone_firewall_events_count[$__rate_interval]))",
+          "expr": "sum by(source) (increase(cloudflare_prometheus_cloudflare_zone_firewall_events_count[$__rate_interval]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": false,
@@ -1245,6 +1255,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 25,
             "gradientMode": "none",
@@ -1313,7 +1324,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -1322,10 +1333,10 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_status_country_host",
+          "expr": "sum by(host, country, status) (cloudflare_zone_requests_status_country_host)",
           "format": "time_series",
           "fullMetaSearch": false,
-          "includeNullMetadata": true,
+          "includeNullMetadata": false,
           "instant": false,
           "legendFormat": "{{host}}-{{country}}-{{status}}",
           "range": true,
@@ -1334,7 +1345,6 @@
         }
       ],
       "title": "HTTP Requests By Host Country Status",
-      "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
@@ -1355,6 +1365,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
             "gradientMode": "none",
@@ -1424,7 +1435,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -1433,7 +1444,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "rate(cloudflare_zone_requests_total[10m])",
+          "expr": "increase(cloudflare_zone_requests_total[$__interval])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "interval": "",
@@ -1448,13 +1459,17 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "editorMode": "code",
-          "expr": "rate(cloudflare_zone_requests_cached{zone=~\"elhacker.net\"}[10m])",
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "increase(cloudflare_zone_requests_cached[$__interval])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "interval": "",
           "intervalFactor": 10,
           "legendFormat": "cached",
           "range": true,
-          "refId": "B"
+          "refId": "B",
+          "useBackend": false
         }
       ],
       "title": "Requests / second",
@@ -1487,484 +1502,6 @@
         "x": 12,
         "y": 38
       },
-      "id": 95,
-      "interval": "5m",
-      "options": {
-        "displayLabels": [
-          "percent",
-          "name"
-        ],
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "values": [
-            "percent",
-            "value"
-          ]
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_browser_map_page_views_count",
-          "format": "time_series",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "SearchBots Extended",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*BingBot*.*)",
-            "renamePattern": "BingBot"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Chromium.*)",
-            "renamePattern": "Chromium"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*TwitterBot*.*)",
-            "renamePattern": "TwitterBot"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Wget*.*)",
-            "renamePattern": "wget"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*YandexBot*.*)",
-            "renamePattern": "YandexBot"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Opera*.*)",
-            "renamePattern": "Opera"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*AppleBot*.*)",
-            "renamePattern": "AppleBot"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Chrome*.*)",
-            "renamePattern": "Chrome"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Yandex*.*)",
-            "renamePattern": "Yandex"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Firefox*.*)",
-            "renamePattern": "Firefox"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*GoogleBot*.*)",
-            "renamePattern": "GoogleBot"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Edge*.*)",
-            "renamePattern": "Edge"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Instagram*.*)",
-            "renamePattern": "Instagram"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Safari*.*)",
-            "renamePattern": "Safari"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*IE*.*)",
-            "renamePattern": "IE"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Silk*.*)",
-            "renamePattern": "Silk"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Unknown*.*)",
-            "renamePattern": "Unknown"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*Curl*.*)",
-            "renamePattern": "Curl"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*SmartTV*.*)",
-            "renamePattern": "SmartTV"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*SamsungTV*.*)",
-            "renamePattern": "SamsungTV"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*UCBrowser*.*)",
-            "renamePattern": "UCBrowser"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(.*OAI-SearchBot*.*)",
-            "renamePattern": "OpenAI Search"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "byVariable": false,
-            "include": {
-              "names": [
-                "Time",
-                "AppleBot",
-                "BingBot",
-                "TwitterBot",
-                "GoogleBot"
-              ]
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 45
-      },
-      "id": 89,
-      "interval": "1m",
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "pluginVersion": "7.1.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_status{status!~\"2..\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "interval": "",
-          "intervalFactor": 10,
-          "legendFormat": "{{status}}",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Requests / Second (status codes not 2XX)",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(429.*)",
-            "renamePattern": "429 - Rate Limited"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(403.*)",
-            "renamePattern": "403 - Forbidden"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(301.*)",
-            "renamePattern": "301 -Moved Permanently"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(302.*)",
-            "renamePattern": "302 - Found"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(304.*)",
-            "renamePattern": "304 - Not Modified "
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(405.*)",
-            "renamePattern": "405 - Method Not Allowed"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(414.*)",
-            "renamePattern": "414 - Request-URI Too Long"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(499.*)",
-            "renamePattern": "499 - Client Closed Request"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(520.*)",
-            "renamePattern": "520 - Origin Error"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(521.*)",
-            "renamePattern": "521 - Origin Down"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(522.*)",
-            "renamePattern": "522 - Origin Connection Time-out"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(524.*)",
-            "renamePattern": "524 - Timeout occurred"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(525.*)",
-            "renamePattern": "525 - Origin SSL Handshake Error "
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(504.*)",
-            "renamePattern": "504 - Gateway Timeout error"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "(404.*)",
-            "renamePattern": "404 - Not Found"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time",
-                "403 - Forbidden",
-                "404 - Not Found",
-                "414 - Request-URI Too Long",
-                "429 - Rate Limited",
-                "499 - Client Closed Request"
-              ]
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {},
-      "description": "Search Bots %",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": [],
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 45
-      },
       "id": 98,
       "interval": "5m",
       "options": {
@@ -1995,6 +1532,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -2188,6 +1726,239 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 45
+      },
+      "id": 89,
+      "interval": "1m",
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "increase(cloudflare_zone_requests_status{status!~\"2..\"}[$__interval])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "interval": "",
+          "intervalFactor": 10,
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Requests / Second (status codes not 2XX)",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(429.*)",
+            "renamePattern": "429 - Rate Limited"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(403.*)",
+            "renamePattern": "403 - Forbidden"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(301.*)",
+            "renamePattern": "301 -Moved Permanently"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(302.*)",
+            "renamePattern": "302 - Found"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(304.*)",
+            "renamePattern": "304 - Not Modified "
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(405.*)",
+            "renamePattern": "405 - Method Not Allowed"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(414.*)",
+            "renamePattern": "414 - Request-URI Too Long"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(499.*)",
+            "renamePattern": "499 - Client Closed Request"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(520.*)",
+            "renamePattern": "520 - Origin Error"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(521.*)",
+            "renamePattern": "521 - Origin Down"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(522.*)",
+            "renamePattern": "522 - Origin Connection Time-out"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(524.*)",
+            "renamePattern": "524 - Timeout occurred"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(525.*)",
+            "renamePattern": "525 - Origin SSL Handshake Error "
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(504.*)",
+            "renamePattern": "504 - Gateway Timeout error"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(404.*)",
+            "renamePattern": "404 - Not Found"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "Time",
+                "403 - Forbidden",
+                "404 - Not Found",
+                "414 - Request-URI Too Long",
+                "429 - Rate Limited",
+                "499 - Client Closed Request"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -2204,7 +1975,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 52
+        "y": 45
       },
       "id": 28,
       "maxDataPoints": 1,
@@ -2236,6 +2007,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -2244,7 +2016,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_status",
+          "expr": "increase(cloudflare_zone_requests_status[$__interval])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "interval": "",
@@ -2386,6 +2158,87 @@
           }
         }
       ],
+      "transparent": true,
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 53
+      },
+      "id": 11,
+      "maxDataPoints": 1,
+      "options": {
+        "displayLabels": [
+          "name"
+        ],
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "percent",
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "increase(cloudflare_zone_requests_content_type[$__interval])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{content_type}}",
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Request Content Type",
       "transparent": true,
       "type": "piechart"
     },
@@ -2537,7 +2390,7 @@
           "zoom": 2.3
         }
       },
-      "pluginVersion": "10.2.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
@@ -2633,227 +2486,6 @@
         "type": "prometheus",
         "uid": "P1809F7CD0C75ACF3"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "decimals": 0,
-          "mappings": [],
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 60
-      },
-      "id": 11,
-      "maxDataPoints": 1,
-      "options": {
-        "displayLabels": [
-          "name"
-        ],
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "values": [
-            "percent"
-          ]
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "cloudflare_zone_requests_content_type",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{content_type}}",
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Request Content Type",
-      "transparent": true,
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
-      "description": "HeatMap",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-blue",
-            "mode": "fixed"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "semi-dark-yellow",
-                "value": 80
-              },
-              {
-                "color": "orange",
-                "value": 90
-              },
-              {
-                "color": "dark-red",
-                "value": 100
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 68
-      },
-      "id": 93,
-      "interval": "5m",
-      "options": {
-        "basemap": {
-          "config": {},
-          "name": "Layer 0",
-          "type": "default"
-        },
-        "controls": {
-          "mouseWheelZoom": true,
-          "showAttribution": false,
-          "showDebug": false,
-          "showMeasure": false,
-          "showScale": false,
-          "showZoom": true
-        },
-        "layers": [
-          {
-            "config": {
-              "blur": 10,
-              "radius": 6,
-              "weight": {
-                "field": "Value",
-                "fixed": 1,
-                "max": 1,
-                "min": 0
-              }
-            },
-            "filterData": {
-              "id": "byRefId",
-              "options": "A"
-            },
-            "location": {
-              "lookup": "country",
-              "mode": "lookup"
-            },
-            "name": "Threats",
-            "opacity": 0.3,
-            "tooltip": true,
-            "type": "heatmap"
-          }
-        ],
-        "tooltip": {
-          "mode": "details"
-        },
-        "view": {
-          "allLayers": true,
-          "id": "coords",
-          "lat": 45.479844,
-          "lon": 30.913826,
-          "zoom": 2.95
-        }
-      },
-      "pluginVersion": "10.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "cloudflare_zone_threats_country",
-          "format": "table",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "interval": "",
-          "legendFormat": "{{country}}",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Threats / country",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "country",
-                "Value"
-              ]
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "geomap"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
-      },
       "description": "Family browsers excluding search Bots",
       "fieldConfig": {
         "defaults": {
@@ -2876,7 +2508,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 70
+        "y": 63
       },
       "id": 94,
       "interval": "5m",
@@ -2891,7 +2523,8 @@
           "placement": "right",
           "showLegend": true,
           "values": [
-            "percent"
+            "percent",
+            "value"
           ]
         },
         "pieType": "donut",
@@ -2907,19 +2540,24 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
+          "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "cloudflare_zone_requests_browser_map_page_views_count",
           "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "useBackend": false
         }
       ],
       "title": "Browsers",
@@ -3134,10 +2772,153 @@
       ],
       "transparent": true,
       "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "description": "HeatMap",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "semi-dark-yellow",
+                "value": 80
+              },
+              {
+                "color": "orange",
+                "value": 90
+              },
+              {
+                "color": "dark-red",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 68
+      },
+      "id": 93,
+      "interval": "5m",
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": false,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "blur": 10,
+              "radius": 6,
+              "weight": {
+                "field": "Value",
+                "fixed": 1,
+                "max": 1,
+                "min": 0
+              }
+            },
+            "filterData": {
+              "id": "byRefId",
+              "options": "A"
+            },
+            "location": {
+              "lookup": "country",
+              "mode": "lookup"
+            },
+            "name": "Threats",
+            "opacity": 0.3,
+            "tooltip": true,
+            "type": "heatmap"
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "allLayers": true,
+          "id": "coords",
+          "lat": 45.479844,
+          "lon": 30.913826,
+          "zoom": 2.95
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "cloudflare_zone_threats_country",
+          "format": "table",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "interval": "",
+          "legendFormat": "{{country}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Threats / country",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "country",
+                "Value"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "geomap"
     }
   ],
+  "preload": false,
   "refresh": false,
-  "schemaVersion": 38,
+  "schemaVersion": 40,
   "tags": [
     "public",
     "cloudflare"
@@ -3159,9 +2940,9 @@
       "1d"
     ]
   },
-  "timezone": "",
+  "timezone": "browser",
   "title": "CloudFlare Public Analytics",
   "uid": "f9292e93-a28c-41ea-9052-ad69872b7678",
-  "version": 51,
+  "version": 24,
   "weekStart": "monday"
 }
