@@ -340,8 +340,13 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "min",
+            "mean",
+            "max",
+            "p95"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -359,7 +364,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum(rate(cloudflare_prometheus_cloudflare_worker_requests_count[1m]))",
+          "expr": "sum(rate(cloudflare_prometheus_cloudflare_worker_requests_count[$__rate_interval]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -444,8 +449,13 @@
       "id": 8,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "min",
+            "mean",
+            "max",
+            "p95"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -463,7 +473,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum(rate(cloudflare_prometheus_cloudflare_worker_errors_count[1m]))",
+          "expr": "sum(rate(cloudflare_prometheus_cloudflare_worker_errors_count[$__rate_interval]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -1353,7 +1363,7 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "cloudflare_prometheus_cloudflare_worker_duration{quantile=\"P50\"}",
+          "expr": "cloudflare_worker_duration{quantile=\"P50\"} > 0.005",
           "fullMetaSearch": false,
           "includeNullMetadata": false,
           "instant": false,
@@ -1378,13 +1388,13 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Cloudflare Workers v1",
   "uid": "f8b0db50-bc71-4c17-9b46-0d111fd7ccb2",
-  "version": 27,
+  "version": 36,
   "weekStart": ""
 }
