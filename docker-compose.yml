@@ -47,6 +47,10 @@ services:
       - "172.18.0.1"  # Keep Docker bridge DNS
       - "1.1.1.1"     # Add Cloudflare's DNS as backup
       - "8.8.8.8"     # Add Google's DNS as additional backup
+    dns_opt:
+      - "ndots:1"
+      - "timeout:2"
+      - "attempts:3"
     restart: unless-stopped
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -415,7 +419,10 @@ services:
     image: telegraf:1.27
     container_name: k6-support-telegraf
     hostname: telegraf
-    dns: ["172.18.0.1"]
+    dns: 
+      - "172.18.0.1"  # Keep Docker bridge DNS
+      - "1.1.1.1"     # Add Cloudflare's DNS as backup
+      - "8.8.8.8"     # Add Google's DNS as additional backup
     user: "telegraf:${DOCKER_GROUP_ID}"
     group_add:
       - ${DOCKER_GROUP_ID:-999}
