@@ -505,7 +505,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(operation) (cloudflare_prometheus_cloudflare_r2_operation_count)",
+          "expr": "sum by(operation) (cloudflare_r2_operation_count)",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
