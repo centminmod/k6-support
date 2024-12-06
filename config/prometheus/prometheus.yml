@@ -1,7 +1,8 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-  scrape_timeout: 10s
+  scrape_timeout: 15s
+  query_log_file: /prometheus/query.log
   external_labels:
     monitor: "k6-support"
     replica: 'prometheus-1'

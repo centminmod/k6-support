@@ -64,13 +64,13 @@ services:
       - '--storage.tsdb.wal-segment-size=128MB'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--web.read-timeout=2m'
+      - '--web.read-timeout=15m'
       - '--web.enable-lifecycle'
       - '--auto-gomemlimit.ratio=0.8'
-      - '--query.lookback-delta=2m'
-      - '--query.max-concurrency=30'
-      - '--query.max-samples=100000000'
-      - '--query.timeout=3m'
+      - '--query.lookback-delta=15m'
+      - '--query.max-concurrency=40'
+      - '--query.max-samples=500000000'
+      - '--query.timeout=15m'
       - '--log.level=debug'
       - '--log.format=json'
     ports:
@@ -495,13 +495,13 @@ services:
       # Core Database Settings
       - GF_DATABASE_WAL=true                    # Enable Write-Ahead Logging for better performance and crash recovery
       - GF_DATABASE_CACHE_MODE=shared           # Use shared cache mode to improve concurrent access
-      - GF_DATABASE_BUSY_TIMEOUT=30000          # Wait up to 30 seconds when database is locked
+      - GF_DATABASE_BUSY_TIMEOUT=90000          # Wait up to 90 seconds when database is locked
       - GF_DATABASE_MAX_CONNECTIONS=200         # Maximum number of concurrent database connections
       - GF_DATABASE_SQLITE_SYNCHRONOUS=2        # Level 2 (NORMAL) synchronization - balance between safety and speed
-      - GF_DATABASE_QUERY_TIMEOUT=30s           # Maximum time a query can run before timeout
+      - GF_DATABASE_QUERY_TIMEOUT=60s           # Maximum time a query can run before timeout
 
       # Detailed SQLite Optimizations
-      - GF_DATABASE_SQLITE_PRAGMAS=journal_mode=wal,synchronous=normal,cache_size=2000,foreign_keys=1,busy_timeout=15000,temp_store=memory
+      - GF_DATABASE_SQLITE_PRAGMAS=journal_mode=wal,synchronous=normal,cache_size=2000,foreign_keys=1,busy_timeout=90000,temp_store=memory
                                                 # Combined SQLite optimizations:
                                                 # - journal_mode=wal: Use Write-Ahead Logging
                                                 # - synchronous=normal: Balance between safety and speed
@@ -511,7 +511,7 @@ services:
                                                 # - temp_store=memory: Store temporary tables in memory
       - GF_DATABASE_SQLITE_JOURNAL_MODE=wal     # Explicitly set WAL journaling mode
       - GF_DATABASE_SQLITE_SYNC=normal          # Normal synchronization mode (same as synchronous=normal)
-      - GF_DATABASE_CONN_MAX_LIFETIME=7200     # Maximum lifetime of a connection in seconds (2 hours)
+      - GF_DATABASE_CONN_MAX_LIFETIME=7200      # Maximum lifetime of a connection in seconds (2 hours)
       - GF_DATABASE_LOG_QUERIES=false            # Log all database queries for debugging
       
       # Connection Pool Settings
@@ -534,13 +534,14 @@ services:
       
       # General Performance Settings
       - GF_PATHS_TEMP_DATA_LIFETIME=48h       # Keep temporary data for 48 hours
-      - GF_SERVER_READ_TIMEOUT=60s            # HTTP read timeout
-      - GF_SERVER_WRITE_TIMEOUT=60s           # HTTP write timeout
+      - GF_SERVER_READ_TIMEOUT=900s            # HTTP read timeout
+      - GF_SERVER_WRITE_TIMEOUT=900s           # HTTP write timeout
       - GF_DASHBOARDS_VERSIONS_TO_KEEP=30     # Keep last 20 versions of dashboards
       - GF_ALERTING_MAX_ANNOTATIONS_TO_KEEP=10000  # Maximum number of alert annotations to keep
       
       # Data Source Query Settings
-      - GF_DATAPROXY_TIMEOUT=30               # Timeout for datasource queries in seconds
+      - GF_DATAPROXY_TIMEOUT=900               # Timeout for datasource queries in seconds
+      - GF_DATAPROXY_KEEP_ALIVE_TIMEOUT=900
       - GF_DATAPROXY_LOGGING=false             # Log datasource proxy requests for debugging
       - GF_UNIFIED_ALERTING_MAX_RULES_PER_DASHBOARD=50  # Limit alert rules per dashboard
 

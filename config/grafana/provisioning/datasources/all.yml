@@ -9,6 +9,18 @@ datasources:
     isDefault: true
     editable: false
     version: 1
+    jsonData:
+      timeInterval: "30s"        # Minimum time interval between data points. Prevent too granular queries that could overload the system
+      queryTimeout: "900s"       # Maximum time a query can run before timing out (10 minutes)
+      httpMethod: "POST"         # Uses POST instead of GET for queries. Better for large queries as it avoids URL length limitations
+      manageAlerts: true         # Allows Grafana to manage Prometheus alerts
+      cacheLevel: "High"         # Maximizes caching of query results to improve performance
+      disableRecordingRules: false  # Allows use of Prometheus recording rules which can pre-compute expensive queries
+      incrementalQuerying: true     # Breaks large time-range queries into smaller chunks
+      incrementalQueryOverlapWindow: "15m"  # When using incremental queries, adds 10m overlap between chunks to ensure continuity
+      cacheMaxAge: "900s"      # How long to keep query results in cache (10 minutes)
+      timeoutInSeconds: 900      # Explicit timeout setting
+      queryTimeoutEnabled: true  # Enable query timeout
 
   - name: influxDB
     type: influxdb
