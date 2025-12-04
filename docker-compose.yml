@@ -55,7 +55,8 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=190d'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=15GB'
       - '--storage.tsdb.max-block-duration=2h'
       - '--storage.tsdb.min-block-duration=2h'
       - '--storage.tsdb.head-chunks-write-queue-size=4096'
@@ -71,7 +72,7 @@ services:
       - '--query.max-concurrency=40'
       - '--query.max-samples=500000000'
       - '--query.timeout=15m'
-      - '--log.level=debug'
+      - '--log.level=info'
       - '--log.format=json'
     ports:
       - "9199:9090"
@@ -675,3 +676,24 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  influx-retention:
+    image: influxdb:2.7
+    profiles: ["ops"] # docker compose --profile ops run --rm influx-retention
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      DOCKER_INFLUXDB_INIT_ORG: ${DOCKER_INFLUXDB_INIT_ORG}
+    entrypoint: ["/bin/sh", "-lc"]
+    command: |
+      ORG="$${DOCKER_INFLUXDB_INIT_ORG:-myorg}"
+      TOK="$$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN"
+
+      influx bucket update --org "$$ORG" --name telegraf   --retention 720h  --token "$$TOK"
+      influx bucket update --org "$$ORG" --name cloudflare --retention 720h  --token "$$TOK"
+      influx bucket update --org "$$ORG" --name k6         --retention 2160h --token "$$TOK"
+      influx bucket update --org "$$ORG" --name psrecord   --retention 336h  --token "$$TOK"
+
+      influx bucket list --org "$$ORG" --token "$$TOK"
