@@ -483,12 +483,14 @@ services:
           cpus: '1'    # Container is guaranteed at least half a CPU core
     privileged: false
     volumes:
-      - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro 
+      - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
       - ./config/telegraf/telegraf.d:/etc/telegraf/telegraf.d:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/host/sys:ro
       - /proc:/host/proc:ro
       - /etc:/host/etc:ro
+      - /dev:/dev:ro
+      - /run/udev:/run/udev:ro
     depends_on:
       influxdb:
         condition: service_healthy
